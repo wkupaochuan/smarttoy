@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Gain
- * Date: 14-10-10
- * Time: 17:38
- */
-
 
 /**
  * mp3 model
@@ -14,7 +7,7 @@
 class Mp3_model extends CI_Model{
 
     // 数据库表名常量
-    const TABLE_NAME_MP3 = 'toy_mp3_item';
+    const TABLE_NAME_MP3 = 'toy_story';
 
     /**
      * 构造方法
