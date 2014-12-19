@@ -36,6 +36,12 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
+/*api地址*/
+define('TOY_API_URL', 'http://toy-admin.wkupaochuan.com');
+
+/*后台管理地址*/
+define('TOY_ADMIN_URL', 'http://toy-admin.wkupaochuan.com');
+
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

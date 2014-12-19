@@ -45,6 +45,7 @@ if (defined('ENVIRONMENT'))
 	}
 }
 
+error_reporting(-1);
 /*
  *---------------------------------------------------------------
  * SYSTEM FOLDER NAME

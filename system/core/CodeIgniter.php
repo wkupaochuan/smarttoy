@@ -50,6 +50,8 @@
  */
 	require(BASEPATH.'core/Common.php');
 
+    require(APPPATH.'core/MY_Service.php');
+
 /*
  * ------------------------------------------------------
  *  Load the framework constants

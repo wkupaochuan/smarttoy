@@ -1,10 +1,14 @@
 <?php
 
-/**
- * mp3操作类
- * Class Mp3
- */
-class Mp3 extends  CI_Controller{
+
+class Index extends  CI_Controller{
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->load->service('story/story_service');
+    }
 
     /**
      * 获取故事列表
@@ -23,7 +27,8 @@ class Mp3 extends  CI_Controller{
         // 获取搜索条件
         $search_words = isset($params['search_words'])? $params['search_words']:'';
 
-        $res = $this->get_story_list_by_search($search_words);
+        $res = $this->story_service->get_story_list_by_search($search_words);
+//        $res = $this->get_story_list_by_search($search_words);
 
         echo json_encode($res);
     }
@@ -90,4 +95,5 @@ class Mp3 extends  CI_Controller{
         return $new_arr;
     }
 
-}
+
+} 
