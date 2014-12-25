@@ -1,10 +1,6 @@
 <?php
 
-/**
- * mp3 model
- * Class Mp3_model
- */
-class Mp3_model extends CI_Model{
+class class_model extends CI_Model{
 
     // 数据库表名常量
     const TABLE_NAME_MP3 = 'toy_story';

@@ -11,6 +11,14 @@
 */
 
 
+$hook['post_system'] = array(
+    'class'    => 'Toy_check_hook',
+    'function' => 'check_toy',
+    'filename' => 'toy_check_hook.php',
+    'filepath' => 'hooks'
+);
+
+
 
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */
