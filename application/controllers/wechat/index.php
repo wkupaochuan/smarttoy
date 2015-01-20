@@ -12,6 +12,20 @@ class Index extends  CI_Controller{
         parent::__construct();
     }
 
+    public function test_redis()
+    {
+        $this->load->library('cache/redis_cache');
+
+        $name = $this->redis_cache->get('name');
+        if(empty($name))
+        {
+            print_r('no find');
+            $this->redis_cache->set('name', 'chuan', 100);
+            $name = 'chuan';
+        }
+        echo $name;
+    }
+
 
     public function dispatch()
     {
