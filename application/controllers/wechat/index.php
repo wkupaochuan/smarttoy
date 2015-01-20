@@ -12,24 +12,24 @@ class Index extends  CI_Controller{
         parent::__construct();
     }
 
-    public function test_redis()
+    /**
+     * 测试方法
+     */
+    public function test()
     {
-        $this->load->library('cache/redis_cache');
-
-        $name = $this->redis_cache->get('name');
-        if(empty($name))
-        {
-            print_r('no find');
-            $this->redis_cache->set('name', 'chuan', 100);
-            $name = 'chuan';
-        }
+        // 获取access token
+        $this->load->library('wechat/wechat_auth');
+        $name = $this->wechat_auth->get_access_token();
         echo $name;
     }
 
 
+    /**
+     * 接收微信消息
+     */
     public function dispatch()
     {
-//        error_log(print_r($_GET, true), 3, '/tmp/a.log');
+        error_log(print_r($_REQUEST, true), 3, '/tmp/a.log');
         if (isset($_GET['echostr'])) {
             $this->valid();
         }else{
@@ -41,59 +41,12 @@ class Index extends  CI_Controller{
     /**
      * 回复消息
      */
-    public function reponseMsg()
+    public function response_msg()
     {
-//        $constentStr = $_REQUEST['msg'];
-
-        $toUsername = 'gh_cf38532f3c17';
-
-        $accessToken = '74_Cu3QcMavGX8Q6Hci_UxSDg-UzzNra6z-0kL5r2f3C1ecm6ZckDr90kmyWlOUsZ3bWvUviRcVOdgZfXTXpBWi2KgEBBKOwvnI_sF9GbWg';
-        //$this->getAccessToken();
-        error_log(print_r($accessToken, true), 3, '/tmp/a.log');
-        $url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='.$accessToken;
-
-        // 参数数组
-        $data = array (
-            'touser' => $toUsername
-            ,'msgtype' => 'text'
-            ,'text' => array(
-                'content' => 'ddd'
-            )
-        );
-
-
-        $ch = curl_init ();
-        curl_setopt ( $ch, CURLOPT_URL, $url);
-        curl_setopt ( $ch, CURLOPT_POST, 1 );
-        curl_setopt ( $ch, CURLOPT_HEADER, 0 );
-        curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
-        curl_setopt ( $ch, CURLOPT_POSTFIELDS, $data );
-        $return = curl_exec ( $ch );
-        error_log(print_r($return, true), 3, '/tmp/a.log');
-        curl_close ( $ch );
+        $msg = 'i am chuan 王';
+        $this->load->library('wechat/custom_message');
+        $this->custom_message->send_text_message($msg);
     }
-
-
-
-    /**
-     * 获取access_token
-     * @return mixed
-     */
-    private function getAccessToken()
-    {
-        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".self::APP_ID."&secret=".self::SECRET_KEY;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-        $ret = curl_exec($ch);
-        $ret = json_decode($ret);
-        curl_close($ch);
-        return $ret->access_token;
-    }
-
-
 
 
     /**
@@ -164,6 +117,7 @@ class Index extends  CI_Controller{
     public function valid()
     {
         $echoStr = $_GET["echostr"];
+
         if($this->checkSignature()){
             echo $echoStr;
             exit;
