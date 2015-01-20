@@ -2,8 +2,8 @@
 
 class class_model extends CI_Model{
 
-    // 数据库表名常量
-    const TABLE_NAME_MP3 = 'toy_story';
+    // 表名称
+    private static $_table_name = 'toy_class';
 
     /**
      * 构造方法
@@ -16,12 +16,13 @@ class class_model extends CI_Model{
 
 
     /**
-     * 获取故事列表
+     * 获取课程列表
+     * @return mixed
      */
-    public function get_sotry_list()
+    public function get_class_list()
     {
         // 查询sql
-        $sql = 'select * from '.self::TABLE_NAME_MP3;
+        $sql = 'select * from '.self::$_table_name;
 
         // 查询
         $query = $this->db->query($sql);

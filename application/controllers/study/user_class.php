@@ -6,6 +6,8 @@ class User_class extends CI_Controller{
     public function __construct()
     {
         parent::__construct();
+
+        $this->load->service('study/class_service');
     }
 
 
@@ -14,19 +16,16 @@ class User_class extends CI_Controller{
      */
     public function get_classes_for_today()
     {
-        $array_classes = array();
-        for($i = 0; $i < 4; ++$i)
+        $class_list = $this->class_service->get_class_list();
+
+        foreach($class_list as &$record)
         {
-            $class = array(
-                'class_title' => '我是'.$i,
-                'class_cover' => 'http://toy-admin.wkupaochuan.com/mp3_files/62c7c2a287015e5f5a59d1b1d701a52f.jpg',
-                'class_progress' => intval(20*$i),
-                'class_grade' => intval(80)
-            );
-            array_push($array_classes, $class);
+            $record['class_cover'] = $record['class_cover_path'];
+            $record['class_progress'] = intval(70);
+            $record['class_grade'] = intval(70);
         }
 
-        echo json_encode($array_classes);
+        echo json_encode($class_list);
     }
 
 

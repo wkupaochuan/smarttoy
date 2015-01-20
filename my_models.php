@@ -12,6 +12,7 @@
  *
  * @property story_model        $story_model
  * @property user_toy_model    $user_toy_model
+ * @property class_model        $class_model
  *
  */
 class my_models
