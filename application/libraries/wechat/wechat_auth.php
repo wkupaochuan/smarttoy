@@ -48,16 +48,32 @@ class wechat_auth {
     private function _get_access_token_from_wechat()
     {
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".self::APP_ID."&secret=".self::SECRET_KEY;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-        $ret = curl_exec($ch);
-        $ret = json_decode($ret);
-        curl_close($ch);
+        $ret = $this->https_request($url);
         echo '---发起微信请求---';
         return $ret->access_token;
+    }
+
+
+    /**
+     * 发送微信请求
+     * @param $url
+     * @param null $data
+     * @return mixed
+     */
+    function https_request($url, $data = null)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if (!empty($data)){
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return json_decode($output);
     }
 
 } 

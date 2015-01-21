@@ -23,6 +23,13 @@ class Index extends  CI_Controller{
         echo $name;
     }
 
+    public function upload()
+    {
+        $this->load->library('wechat/media_deliver');
+        $name = $this->media_deliver->upload_voice();
+        echo $name;
+    }
+
 
     /**
      * 接收微信消息
@@ -43,9 +50,10 @@ class Index extends  CI_Controller{
      */
     public function response_msg()
     {
-        $msg = 'i am chuan 王';
+        $msg = 'i am chuan 王川川';
         $this->load->library('wechat/custom_message');
         $this->custom_message->send_text_message($msg);
+        $this->custom_message->send_image_message();
     }
 
 
