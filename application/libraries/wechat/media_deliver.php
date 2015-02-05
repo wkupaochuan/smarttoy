@@ -32,8 +32,9 @@ class media_deliver {
 
         $CI->load->library('wechat/wechat_auth');
         $ret = $CI->wechat_auth->https_request($url, $file_data);
+        print_r($ret);
 
-        return $ret->media_id;
+        return isset($ret->media_id)? $ret->media_id:null;
     }
 
 } 

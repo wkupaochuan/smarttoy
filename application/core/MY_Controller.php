@@ -59,6 +59,31 @@ class MY_Controller extends CI_Controller
     }
 
 
+    /**
+     * 发送post请求
+     * @param $url
+     * @param $data
+     * @return mixed
+     * @throws Exception
+     */
+    public function make_post_request($url, $data)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if (!empty($data)){
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
+        curl_close($curl);print_r($output);exit;
+        $res  = json_decode($output);
+        return $res;
+    }
+
+
 
 
  /****************************************private methods*********************************************************************/

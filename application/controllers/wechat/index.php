@@ -15,24 +15,6 @@ class Index extends  MY_Controller{
         parent::__construct();
     }
 
-    public function test()
-    {
-
-        $a = '';
-        echo $a[3];
-        try{
-echo 444;
-            $this->rest_success(12, '成功s');
-        }
-        catch(Exception $e)
-        {
-            echo 'kd';
-        }
-
-    }
-
-
-
     public function upload()
     {
         $this->load->library('wechat/media_deliver');
@@ -89,7 +71,7 @@ echo 444;
             $to_user = $this->wechat_user_service->get_parent_wechat_user($toy_user);
             if(empty($toy_user))
             {
-                // todo 找不到接收人的情况
+                throw new Exception('找不到对应的接收人');
             }
 
             // 发送消息
@@ -236,5 +218,24 @@ echo 444;
             move_uploaded_file($tempFile,$targetFile);
         }
     }
+
+
+    /**********************************************测试 方法**************************************************************************************/
+
+    /**
+     * 发送客服消息接口
+     */
+    public function test_send_custom_msg()
+    {
+        $url = 'http://toy-api.wkupaochuan.com/wechat/index/send_custom_msg';
+        $data = array(
+            'filePath' => 'upload_file/1423124456.amr'
+            , 'messageType' => 'voice'
+            , 'toyUser' => 'eb2c8e820c13836'
+        );
+        $res = $this->make_post_request($url, $data);
+        print_r($res);exit;
+    }
+
 
 } 

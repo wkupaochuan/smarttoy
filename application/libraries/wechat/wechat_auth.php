@@ -49,7 +49,7 @@ class wechat_auth {
     {
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".self::APP_ID."&secret=".self::SECRET_KEY;
         $ret = $this->https_request($url);
-        echo '---发起微信请求---';
+        echo '向微信获取access_token:'.$ret->access_token;
         return $ret->access_token;
     }
 
@@ -59,6 +59,7 @@ class wechat_auth {
      * @param $url
      * @param null $data
      * @return mixed
+     * @throws Exception
      */
     function https_request($url, $data = null)
     {
@@ -73,7 +74,12 @@ class wechat_auth {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
         curl_close($curl);
-        return json_decode($output);
+        $res  = json_decode($output);
+        if(isset($res->errcode) && $res->errcode != 0)
+        {
+            throw new Exception("请求微信错误:错误码--" . $res->errcode. ';错误内容--' .$res->errmsg);
+        }
+        return $res;
     }
 
 } 

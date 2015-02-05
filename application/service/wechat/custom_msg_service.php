@@ -75,11 +75,16 @@ EOD;
      * 发送语音消息
      * @param $to_user
      * @param $file_path
+     * @throws Exception
      */
     private function _send_voice_msg($to_user, $file_path)
     {
         $this->load->library('wechat/media_deliver');
         $media_id = $this->media_deliver->upload_voice($file_path);
+        if(empty($media_id))
+        {
+            throw new Exception('上传音频到微信失败');
+        }
 
         $body = <<<EOD
                 {
@@ -91,7 +96,7 @@ EOD;
                     }
                 }
 EOD;
-
+        print_r($body);
         // todo 处理发送结果
         $this->_send($body);
     }
