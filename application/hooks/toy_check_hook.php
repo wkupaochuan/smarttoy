@@ -4,16 +4,16 @@ class Toy_check_hook
 {
 	public function __construct()
 	{
-        $params = $_REQUEST;
-        $url = $_SERVER['REQUEST_URI'];
+//        $params = $_REQUEST;
+//        $url = $_SERVER['REQUEST_URI'];
 //        error_log(date('Y-m-d H:i:s').' '.$url.' '.print_r($params, true), 3, '/var/log/dev_tool/toy_app_api/access.log');
-        error_log(date('Y-m-d H:i:s').' '.$url.' '.print_r($params, true), 3, '/var/www/dev_tool/ToyAppApi/log/access.log');
+//        error_log(date('Y-m-d H:i:s').' '.$url.' '.print_r($params, true), 3, '/var/www/dev_tool/ToyAppApi/log/access.log');
 
 
-        $CI = & get_instance();
-
-        $response = $CI->output->get_output();
-        error_log(date('Y-m-d H:i:s').'  '.$response, 3, '/var/www/dev_tool/ToyAppApi/log/access.log');
+//        $CI = & get_instance();
+//
+//        $response = $CI->output->get_output();
+//        error_log(date('Y-m-d H:i:s').'  '.$response, 3, '/var/www/dev_tool/ToyAppApi/log/access.log');
 
 		//nothing to do yet!	
 	}

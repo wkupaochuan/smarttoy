@@ -4,7 +4,7 @@
  * 与微信通信
  * Class Index
  */
-class Index extends  CI_Controller{
+class test extends  MY_Controller{
 
     const TOKEN = 'xiaodudu';
     const APP_ID = 'wxc7b4f0790c32423f';
@@ -20,10 +20,7 @@ class Index extends  CI_Controller{
      */
     public function test()
     {
-        // 获取access token
-        $this->load->library('wechat/wechat_auth');
-        $name = $this->wechat_auth->get_access_token();
-        echo $name;
+        echo 222;
     }
 
     public function upload()

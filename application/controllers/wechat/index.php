@@ -4,7 +4,7 @@
  * 与微信通信
  * Class Index
  */
-class Index extends  CI_Controller{
+class Index extends  MY_Controller{
 
     const TOKEN = 'xiaodudu';
     const APP_ID = 'wxc7b4f0790c32423f';
@@ -14,6 +14,24 @@ class Index extends  CI_Controller{
     {
         parent::__construct();
     }
+
+    public function test()
+    {
+
+        $a = '';
+        echo $a[3];
+        try{
+echo 444;
+            $this->rest_success(12, '成功s');
+        }
+        catch(Exception $e)
+        {
+            echo 'kd';
+        }
+
+    }
+
+
 
     public function upload()
     {
@@ -56,26 +74,34 @@ class Index extends  CI_Controller{
      */
     public function send_custom_msg()
     {
-        $params = $this->input->post();
+        try{
+            $params = $this->input->post();
 
-        // 获取参数
-        $toy_user = $params['toyUser'];
-        $msg_type = $params['messageType'];
-        $msg_content = isset($params['content'])? $params['content']:'';
-        $file_path = isset($params['filePath'])? $params['filePath']:'';
-        $file_path = '/var/www/dev_tool/ToyAppApi/' . $file_path;
+            // 获取参数
+            $toy_user = $params['toyUser'];
+            $msg_type = $params['messageType'];
+            $msg_content = isset($params['content'])? $params['content']:'';
+            $file_path = isset($params['filePath'])? $params['filePath']:'';
+            $file_path = '/var/www/dev_tool/ToyAppApi/' . $file_path;
 
-        // 获取接收人
-        $this->load->service('wechat/wechat_user_service');
-        $to_user = $this->wechat_user_service->get_parent_wechat_user($toy_user);
-        if(empty($toy_user))
-        {
-            // todo 找不到接收人的情况
+            // 获取接收人
+            $this->load->service('wechat/wechat_user_service');
+            $to_user = $this->wechat_user_service->get_parent_wechat_user($toy_user);
+            if(empty($toy_user))
+            {
+                // todo 找不到接收人的情况
+            }
+
+            // 发送消息
+            $this->load->service('wechat/custom_msg_service');
+            $this->custom_msg_service->send_msg($to_user, $msg_type, $msg_content, $file_path);
+
+            $this->rest_success('', '发送消息成功');
+        }
+        catch(Exception $e){
+            $this->rest_fail($e->getMessage());
         }
 
-        // 发送消息
-        $this->load->service('wechat/custom_msg_service');
-        $this->custom_msg_service->send_msg($to_user, $msg_type, $msg_content, $file_path);
     }
 
     /************************************客服消息--end***********************************************************/
