@@ -238,4 +238,15 @@ class Index extends  MY_Controller{
     }
 
 
+    /**
+     * 测试下载多媒体文件
+     */
+    public function test_download_media()
+    {
+        $media_id = '5S8ZFy6iWdHakLdOiCjC9WzIfp_bTSp7aVCI2Y2pi9OLVmkXTWSjD__FtLGvvv5R';
+        $this->load->library('wechat/media_deliver');
+        $this->media_deliver->download_media($media_id);
+    }
+
+
 } 
