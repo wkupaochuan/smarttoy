@@ -15,6 +15,17 @@ class Index extends  CI_Controller{
         parent::__construct();
     }
 
+    /**
+     * 测试方法
+     */
+    public function test()
+    {
+        // 获取access token
+        $this->load->library('wechat/wechat_auth');
+        $name = $this->wechat_auth->get_access_token();
+        echo $name;
+    }
+
     public function upload()
     {
         $this->load->library('wechat/media_deliver');
@@ -47,38 +58,6 @@ class Index extends  CI_Controller{
         $this->custom_message->send_text_message($msg);
         $this->custom_message->send_image_message();
     }
-
-
-    /************************************客服消息--begin***********************************************************/
-
-    /**
-     * 发送客服消息接口
-     */
-    public function send_custom_msg()
-    {
-        $params = $this->input->post();
-
-        // 获取参数
-        $toy_user = $params['toyUser'];
-        $msg_type = $params['messageType'];
-        $msg_content = isset($params['content'])? $params['content']:'';
-        $file_path = isset($params['filePath'])? $params['filePath']:'';
-        $file_path = '/var/www/dev_tool/ToyAppApi/' . $file_path;
-
-        // 获取接收人
-        $this->load->service('wechat/wechat_user_service');
-        $to_user = $this->wechat_user_service->get_parent_wechat_user($toy_user);
-        if(empty($toy_user))
-        {
-            // todo 找不到接收人的情况
-        }
-
-        // 发送消息
-        $this->load->service('wechat/custom_msg_service');
-        $this->custom_msg_service->send_msg($to_user, $msg_type, $msg_content, $file_path);
-    }
-
-    /************************************客服消息--end***********************************************************/
 
 
     /**

@@ -75,6 +75,8 @@
  * @property story_service                          $story_service
  * @property toy_user_service                       $toy_user_service
  * @property class_service                          $class_service
+ * @property custom_msg_service                     $custom_msg_service
+ * @property wechat_user_service                    $wechat_user_service
  *
 
  */
