@@ -96,7 +96,7 @@ EOD;
                     }
                 }
 EOD;
-        print_r($body);
+
         // todo 处理发送结果
         $this->_send($body);
     }

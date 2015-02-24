@@ -28,11 +28,22 @@ class MY_Controller extends CI_Controller
 
 
     /**
+     * 记录调试信息
+     * @param $data
+     */
+    public function debug_log($data)
+    {
+        // 记录调试内容
+        $this->_debug_log($data);
+    }
+
+
+    /**
      * 请求成功
      * @param $data
      * @param $msg
      */
-    public function rest_success($data, $msg)
+    public function rest_success($data, $msg = null)
     {
         $rest_data = array(
             'data' => $data
@@ -98,6 +109,7 @@ class MY_Controller extends CI_Controller
         $this->_log(date('Y-m-d H:i:s') . '  request -- ' . $url . " params\n  "   .print_r($params, true));
     }
 
+
     /**
      * 记录返回日志
      * @param $data
@@ -107,6 +119,17 @@ class MY_Controller extends CI_Controller
     {
         $url = $_SERVER['REQUEST_URI'];
         $this->_log(date('Y-m-d H:i:s') . '  response -- '  . $url . " data\n  " .print_r($data, true). $msg);
+    }
+
+
+    /**
+     * 记录调试日志
+     * @param $data
+     */
+    private function _debug_log($data)
+    {
+        $url = $_SERVER['REQUEST_URI'];
+        $this->_log(date('Y-m-d H:i:s') . '  debug -- '  . $url . " data\n  " .print_r($data, true));
     }
 
 

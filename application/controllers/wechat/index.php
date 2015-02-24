@@ -15,38 +15,29 @@ class Index extends  MY_Controller{
         parent::__construct();
     }
 
-    public function upload()
-    {
-        $this->load->library('wechat/media_deliver');
-        $name = $this->media_deliver->upload_voice();
-        echo $name;
-    }
 
+    /************************************接收消息--begin***********************************************************/
 
+    
     /**
      * 接收微信消息
      */
     public function dispatch()
     {
-        error_log(print_r($_REQUEST, true), 3, '/tmp/a.log');
         if (isset($_GET['echostr'])) {
-            $this->valid();
+            echo $_GET['echostr'];exit;
         }else{
-            $this->autoResponseMsg();
+            $this->load->service('wechat/receive_wechat_msg_service');
+            $msg_data = $this->receive_wechat_msg_service->get_msg();
+
+            $this->debug_log($msg_data);
+            echo '';exit;
         }
     }
 
+    /************************************客服消息--end***********************************************************/
 
-    /**
-     * 回复消息
-     */
-    public function response_msg()
-    {
-        $msg = 'i am chuan 王川川';
-        $this->load->library('wechat/custom_message');
-        $this->custom_message->send_text_message($msg);
-        $this->custom_message->send_image_message();
-    }
+
 
 
     /************************************客服消息--begin***********************************************************/
@@ -90,108 +81,6 @@ class Index extends  MY_Controller{
 
 
     /**
-     * 自动回复消息
-     */
-    private function autoResponseMsg()
-    {
-        //get post data, May be due to the different environments
-        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
-
-        //extract post data
-        if (!empty($postStr)){
-            /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
-               the best way is to check the validity of xml by yourself */
-            libxml_disable_entity_loader(true);
-            $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $fromUsername = $postObj->FromUserName;
-            $toUsername = $postObj->ToUserName;
-            $keyword = trim($postObj->Content);
-            error_log(print_r($postObj, true), 3, '/tmp/a.log');
-
-            if(!empty( $keyword ))
-            {
-                $contentStr = "Welcome to wechat world!哈哈";
-                $resultStr = $this->getTextMsg($toUsername, $fromUsername, $contentStr);
-                echo $resultStr;
-            }else{
-                echo "Input something...";
-            }
-
-        }else {
-            echo "";
-            exit;
-        }
-    }
-
-
-    /**
-     * 获取文字类型的消息
-     * @param $fromUsername
-     * @param $toUsername
-     * @param $contentStr
-     * @return string
-     */
-    private function getTextMsg($fromUsername, $toUsername, $contentStr)
-    {
-        // from gh_cf38532f3c17
-        // to oGICajj4qQ7Nfheyfwbm518r8xqY
-        // msgType text
-
-        $textTpl = "<xml>
-							<ToUserName><![CDATA[%s]]></ToUserName>
-							<FromUserName><![CDATA[%s]]></FromUserName>
-							<CreateTime>%s</CreateTime>
-							<MsgType><![CDATA[%s]]></MsgType>
-							<Content><![CDATA[%s]]></Content>
-							<FuncFlag>0</FuncFlag>
-							</xml>";
-        $msgType = "text";
-        $resultStr = sprintf($textTpl, $toUsername, $fromUsername, time(), $msgType, $contentStr);
-        return $resultStr;
-    }
-
-
-    /**
-     * 接口验证
-     */
-    public function valid()
-    {
-        $echoStr = $_GET["echostr"];
-
-        if($this->checkSignature()){
-            echo $echoStr;
-            exit;
-        }
-    }
-
-
-    private function checkSignature()
-    {
-        // you must define TOKEN by yourself
-        if (!defined("TOKEN")) {
-            throw new Exception('TOKEN is not defined!');
-        }
-
-        $signature = $_GET["signature"];
-        $timestamp = $_GET["timestamp"];
-        $nonce = $_GET["nonce"];
-
-        $token = TOKEN;
-        $tmpArr = array($token, $timestamp, $nonce);
-        // use SORT_STRING rule
-        sort($tmpArr, SORT_STRING);
-        $tmpStr = implode( $tmpArr );
-        $tmpStr = sha1( $tmpStr );
-
-        if( $tmpStr == $signature ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-
-    /**
      * 上传文件
      */
     public function upload_file()
@@ -229,7 +118,7 @@ class Index extends  MY_Controller{
     {
         $url = 'http://toy-api.wkupaochuan.com/wechat/index/send_custom_msg';
         $data = array(
-            'filePath' => 'upload_file/1423124456.amr'
+            'filePath' => 'upload_file/notice.mp3'
             , 'messageType' => 'voice'
             , 'toyUser' => 'eb2c8e820c13836'
         );
@@ -243,7 +132,7 @@ class Index extends  MY_Controller{
      */
     public function test_download_media()
     {
-        $media_id = '5S8ZFy6iWdHakLdOiCjC9WzIfp_bTSp7aVCI2Y2pi9OLVmkXTWSjD__FtLGvvv5R';
+        $media_id = '_qTP_i7NGOQLkTiXcBd7phkPvonSL5Tdz5xFPVP11UIjZlTXYgM7WuYsk0DlhD1s';
         $this->load->library('wechat/media_deliver');
         $this->media_deliver->download_media($media_id);
     }

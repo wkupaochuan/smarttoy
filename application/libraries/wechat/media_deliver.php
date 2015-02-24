@@ -37,7 +37,7 @@ class media_deliver {
 
         $CI->load->library('wechat/wechat_auth');
         $ret = $CI->wechat_auth->https_request($url, $file_data);
-        print_r($ret);
+//        print_r($ret);
 
         return isset($ret->media_id)? $ret->media_id:null;
     }
@@ -46,8 +46,9 @@ class media_deliver {
     /**
      * 下载多媒体文件
      * @param $media_id
+     * @param $destination
      */
-    public function download_media($media_id)
+    public function download_media($media_id, $destination)
     {
         $url = self::DOWNLOAD_URL;
         $CI = & get_instance();

@@ -77,6 +77,7 @@
  * @property class_service                          $class_service
  * @property custom_msg_service                     $custom_msg_service
  * @property wechat_user_service                    $wechat_user_service
+ * @property receive_wechat_msg_service             $receive_wechat_msg_service
  *
 
  */
