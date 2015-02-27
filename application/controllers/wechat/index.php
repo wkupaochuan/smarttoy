@@ -18,7 +18,7 @@ class Index extends  MY_Controller{
 
     /************************************接收消息--begin***********************************************************/
 
-    
+
     /**
      * 接收微信消息
      */
@@ -28,8 +28,22 @@ class Index extends  MY_Controller{
             echo $_GET['echostr'];exit;
         }else{
             $this->load->service('wechat/receive_wechat_msg_service');
-            $msg_data = $this->receive_wechat_msg_service->get_msg();
+            $msg_data = $this->receive_wechat_msg_service->get_msg(true);
 
+            $msg = array(
+                'messageType' => $msg_data['msg_type']
+                , 'text' => $msg_data['content']
+                , 'file' => HOME_URL. '/' . $msg_data['media_path']
+            );
+
+            $from_user = 'test1';
+            $to_user = 'eb2c8e820c13836';
+
+            $url = '127.0.0.1:8090/im_server/servlet/ChatServlet?from_user='. $from_user
+                . '&to_user=' . $to_user . '&password=' . '&msg=' . json_encode($msg);
+
+            $this->load->library('wechat/wechat_auth');
+            $res = $this->wechat_auth->https_request($url);
             $this->debug_log($msg_data);
             echo '';exit;
         }
@@ -55,7 +69,6 @@ class Index extends  MY_Controller{
             $msg_type = $params['messageType'];
             $msg_content = isset($params['content'])? $params['content']:'';
             $file_path = isset($params['filePath'])? $params['filePath']:'';
-            $file_path = '/var/www/dev_tool/ToyAppApi/' . $file_path;
 
             // 获取接收人
             $this->load->service('wechat/wechat_user_service');
@@ -85,19 +98,24 @@ class Index extends  MY_Controller{
      */
     public function upload_file()
     {
-        $uploadedFileData = $_FILES['Filedata'];
+        try{
+            $uploadedFileData = $_FILES['Filedata'];
 
-        $tempFile = $uploadedFileData['tmp_name'];
+            $tempFile = $uploadedFileData['tmp_name'];
 
-        // Define a destination
-        $targetPath = $_SERVER['DOCUMENT_ROOT'] . '/' . 'upload_file';
-        $targetFileName = time().'.'.pathinfo($uploadedFileData['name'], PATHINFO_EXTENSION);
-        $targetFile = $targetPath. '/' .$targetFileName;
+            // Define a destination
+            $targetFileName = time().'.'.pathinfo($uploadedFileData['name'], PATHINFO_EXTENSION);
+            $targetFile = FILE_UPLOAD_PATH . '/' .$targetFileName;
 
-        // 移动文件到目的目录
-        $this->moveFile($tempFile,$targetFile);
+            // 移动文件到目的目录
+            $this->moveFile($tempFile,$targetFile);
 
-        echo 'upload_file/' . $targetFileName;
+            echo $targetFileName;exit;
+        }
+        catch(Exception $e)
+        {
+            $this->rest_fail($e->getMessage());
+        }
     }
 
     public function moveFile($tempFile,$targetFile)
@@ -111,6 +129,7 @@ class Index extends  MY_Controller{
 
     /**********************************************测试 方法**************************************************************************************/
 
+
     /**
      * 发送客服消息接口
      */
@@ -118,7 +137,9 @@ class Index extends  MY_Controller{
     {
         $url = 'http://toy-api.wkupaochuan.com/wechat/index/send_custom_msg';
         $data = array(
-            'filePath' => 'upload_file/notice.mp3'
+//            'filePath' => '123456.jpg'
+//            , 'messageType' => 'image'
+            'filePath' => '1424855307819.amr'
             , 'messageType' => 'voice'
             , 'toyUser' => 'eb2c8e820c13836'
         );
@@ -132,9 +153,10 @@ class Index extends  MY_Controller{
      */
     public function test_download_media()
     {
-        $media_id = '_qTP_i7NGOQLkTiXcBd7phkPvonSL5Tdz5xFPVP11UIjZlTXYgM7WuYsk0DlhD1s';
+        $media_id = 'N00fINLh8zxZ30JO5rg6FdubWvjuxuAeSY2fQv7oamzbw9ePmo7gUitfprZ5ud0h';
         $this->load->library('wechat/media_deliver');
-        $this->media_deliver->download_media($media_id);
+        $res = $this->media_deliver->download_media($media_id);
+        echo $res;exit;
     }
 
 

@@ -41,6 +41,9 @@ class custom_msg_service extends MY_Service{
             case 'voice':
                 $this->_send_voice_msg($to_user, $file_path);
                 break;
+            case 'image':
+                $this->_send_image_msg($to_user, $file_path);
+                break;
         }
     }
 
@@ -70,6 +73,37 @@ EOD;
     }
 
 
+    /**
+     * 发送图片消息
+     * @param $to_user
+     * @param $file_path
+     * @throws Exception
+     */
+    private function _send_image_msg($to_user, $file_path)
+    {
+        $file_path = FILE_UPLOAD_PATH . '/' .$file_path;
+        $this->load->library('wechat/media_deliver');
+        $media_id = $this->media_deliver->upload_image($file_path);
+
+        if(empty($media_id))
+        {
+            throw new Exception('上传图片到微信失败');
+        }
+
+        $body = <<<EOD
+                {
+                    "touser":"$to_user",
+                    "msgtype":"image",
+                    "image":
+                    {
+                         "media_id":"$media_id"
+                    }
+                }
+EOD;
+
+        // todo 处理发送结果
+        $this->_send($body);
+    }
 
     /**
      * 发送语音消息
@@ -79,8 +113,10 @@ EOD;
      */
     private function _send_voice_msg($to_user, $file_path)
     {
+        $file_path = FILE_UPLOAD_PATH . '/' .$file_path;
         $this->load->library('wechat/media_deliver');
         $media_id = $this->media_deliver->upload_voice($file_path);
+//        $media_id = "PoygXipp3jNYcXTs7Ftq-w18KAIk4Bk_-RyiGPCPT1d5ol2CFNHvB1o5tRUw_03r";
         if(empty($media_id))
         {
             throw new Exception('上传音频到微信失败');

@@ -42,6 +42,14 @@ define('TOY_API_URL', 'http://toy-admin.wkupaochuan.com');
 /*后台管理地址*/
 define('TOY_ADMIN_URL', 'http://toy-admin.wkupaochuan.com');
 
+define('FILE_UPLOAD_PATH', FCPATH.'upload_file');
+
+define('FILE_DOWNLOAD_PATH', FCPATH.'download_file');
+
+define('FILE_DOWNLOAD_ROOT_DIR', 'download_file');
+define('FILE_UPLOAD_ROOT_DIR', 'upload_file');
+define('HOME_URL', 'http://toy-api.wkupaochuan.com');
+
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

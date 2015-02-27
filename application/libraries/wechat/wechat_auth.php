@@ -73,7 +73,7 @@ class wechat_auth {
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
-        curl_close($curl);
+        curl_close($curl);print_r($output);
         $res  = json_decode($output);
         if(isset($res->errcode) && $res->errcode != 0)
         {
