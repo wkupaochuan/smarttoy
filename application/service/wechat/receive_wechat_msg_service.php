@@ -46,6 +46,7 @@ class receive_wechat_msg_service extends MY_Service{
             , 'media_id' => (string)$postObj->MediaId
             , 'media_path' => $media_path
             , 'content' => (string)$postObj->Content
+            , 'event' => (string)$postObj->Event
         );
 
         return $res;

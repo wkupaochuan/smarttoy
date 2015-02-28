@@ -27,26 +27,49 @@ class Index extends  MY_Controller{
         if (isset($_GET['echostr'])) {
             echo $_GET['echostr'];exit;
         }else{
-            $this->load->service('wechat/receive_wechat_msg_service');
-            $msg_data = $this->receive_wechat_msg_service->get_msg(true);
+            try{
+                $this->load->service('wechat/receive_wechat_msg_service');
+                $msg_data = $this->receive_wechat_msg_service->get_msg(true);
 
-            $msg = array(
-                'messageType' => $msg_data['msg_type']
-                , 'text' => $msg_data['content']
-                , 'file' => HOME_URL. '/' . $msg_data['media_path']
-            );
-
-            $from_user = 'test1';
-            $to_user = 'eb2c8e820c13836';
-
-            $url = '127.0.0.1:8090/im_server/servlet/ChatServlet?from_user='. $from_user
-                . '&to_user=' . $to_user . '&password=' . '&msg=' . json_encode($msg);
-
-            $this->load->library('wechat/wechat_auth');
-            $res = $this->wechat_auth->https_request($url);
-            $this->debug_log($msg_data);
+                switch($msg_data['msg_type'])
+                {
+                    case 'text':
+                    case 'voice':
+                        $this->_send_msg_to_app($msg_data);
+                        break;
+                    case 'event':
+                        $this->load->service('wechat/wechat_user_service');
+                        $this->wechat_user_service->handle_user_subscribe_event($msg_data);
+                        break;
+                }
+            }
+            catch(Exception $e)
+            {
+                $this->debug_log($e->getTraceAsString());
+            }
             echo '';exit;
         }
+    }
+
+
+    private function _send_msg_to_app($msg_data)
+    {
+        $msg = array(
+            'messageType' => $msg_data['msg_type']
+        , 'text' => $msg_data['content']
+        , 'file' => HOME_URL. '/' . $msg_data['media_path']
+        );
+
+        $from_user = 'test1';
+        $to_user = 'eb2c8e820c13836';
+
+        $url = '127.0.0.1:8090/im_server/servlet/ChatServlet?from_user='. $from_user
+            . '&to_user=' . $to_user . '&password=' . '&msg=' . json_encode($msg);
+
+        $this->load->library('wechat/wechat_auth');
+        $res = $this->wechat_auth->https_request($url);
+        $this->debug_log($msg_data);
+        echo '';exit;
     }
 
     /************************************客服消息--end***********************************************************/

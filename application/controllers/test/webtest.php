@@ -10,7 +10,12 @@ class Webtest extends  \CI_Controller{
 
     public function index()
     {
-
+        $a = array('3', '30', '2', '22', 'a');
+        natsort($a);
+        print_r($a);
+        $b = array('ab21', 'a1', 'a3' , 'b1', 'c8');
+        natsort($b);
+        print_r($b);
         $res = 'i love you!, Sanguniang!'.date('Y-m-d', time());
         echo json_encode($res);
     }
