@@ -14,6 +14,7 @@
  * @property user_toy_model    $user_toy_model
  * @property user_wechat_model    $user_wechat_model
  * @property class_model        $class_model
+ * @property toy_wechat_relation_model        $toy_wechat_relation_model
  *
  */
 class my_models

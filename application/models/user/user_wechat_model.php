@@ -61,4 +61,25 @@ EOD;
     }
 
 
+    /**
+     * 根据open_id和公众号获取用户信息
+     * @param $opend_id
+     * @param $developer_weixin_id
+     * @return mixed
+     */
+    public function get_user_by_opend_id($opend_id, $developer_weixin_id)
+    {
+        $sql = <<<EOD
+            SELECT
+                id, open_id, developer_weixin_name, subscribe_status
+            FROM
+                toy_user_wechat
+            WHERE
+                open_id = '$opend_id' and developer_weixin_name = '$developer_weixin_id' and subscribe_status = 1
+EOD;
+        $query = $this->db->query($sql);
+        return $query->result_array();
+    }
+
+
 } 
