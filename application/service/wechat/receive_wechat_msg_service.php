@@ -16,6 +16,19 @@ class receive_wechat_msg_service extends MY_Service{
 
     public function get_msg($download_media = false)
     {
+        // todo for test
+//        $res = array(
+//            'from_username' => 'og0UpuEhZ0No4K7Wf0DflsBYQzPE'
+//        , 'to_username' => 'gh_f3e29636ebd7'
+//        , 'msg_type' => 'text'
+//        , 'media_id' => ''
+//        , 'media_path' => ''
+//        , 'content' => 'jj'
+//        , 'event' => ''
+//        );
+//
+//        return $res;
+
         $res = array();
         //get post data, May be due to the different environments
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
@@ -50,6 +63,29 @@ class receive_wechat_msg_service extends MY_Service{
         );
 
         return $res;
+    }
+
+
+    /**
+     * 发送文字消息
+     * @param $to_username
+     * @param $devepoer_username
+     * @param $content
+     */
+    public function send_text_msg($to_username, $devepoer_username, $content)
+    {
+        $created_time = time();
+        $textTpl = "<xml>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[%s]]></MsgType>
+                        <Content><![CDATA[%s]]></Content>
+                        <FuncFlag>0</FuncFlag>
+                    </xml>";
+        $resultStr = sprintf($textTpl, $to_username, $devepoer_username, $created_time, 'text', $content);//格式化写入XML
+        echo $resultStr;//发送
+        exit;
     }
 
 

@@ -36,6 +36,7 @@ class Index extends  MY_Controller{
                     case 'text':
                     case 'voice':
                         $this->_send_msg_to_app($msg_data);
+                        $this->receive_wechat_msg_service->send_text_msg($msg_data['from_username'], $msg_data['to_username'], '消息发送成功');
                         break;
                     case 'event':
                         $this->load->service('wechat/wechat_user_service');
@@ -58,6 +59,13 @@ class Index extends  MY_Controller{
      */
     private function _send_msg_to_app($msg_data)
     {
+        // 内定的开发者才发送消息，其他用户屏蔽，以免影响账号的正常使用
+        $developers = array('og0UpuEhZ0No4K7Wf0DflsBYQzPE', 'og0UpuAo8aPWb-QqIugaB48gI94Q');
+        if( !in_array($msg_data['from_username'], $developers))
+        {
+            echo '';exit;
+        }
+
         $this->load->service('user/toy_wechat_relation_service');
         // 处理关注事件
         if(strpos($msg_data['content'], 'gz:') === 0)
@@ -198,6 +206,9 @@ class Index extends  MY_Controller{
     }
 
 
+    /**
+     * 测试好友关系
+     */
     public function test_relationship()
     {
         $msg_data = array(
@@ -210,6 +221,23 @@ class Index extends  MY_Controller{
         , 'event' => ''
         );
         $this->_send_msg_to_app($msg_data);
+    }
+
+
+    /**
+     * 测试自动接收消息
+     */
+    public function test_recieve_msg()
+    {
+        $url = 'http://toy-api.wkupaochuan.com/wechat/index/dispatch';
+        $data = array(
+            'FromUserName' => 'og0UpuEhZ0No4K7Wf0DflsBYQzPE'
+            , 'ToUserName' => 'gh_f3e29636ebd7'
+            , 'MsgType' => 'text'
+            , 'Content' => 'ddd'
+        );
+        $res = $this->make_post_request($url, $data);
+        print_r($res);exit;
     }
 
 
