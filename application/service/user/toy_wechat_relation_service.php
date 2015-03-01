@@ -12,9 +12,48 @@ class toy_wechat_relation_service extends MY_Service{
 
  /****************************public methods******************************************************************************************/
 
+
+    /**
+     * 根据微信用户，查找app用户
+     * @param $toy_wechat_open_id
+     * @return mixed
+     */
+    public function get_child_toy_user($toy_wechat_open_id)
+    {
+        $toy_user_info = $this->toy_wechat_relation_model->get_child_toy_user_by_wechat_open_id($toy_wechat_open_id);
+        if(empty($toy_user_info))
+        {}
+        else if(count($toy_user_info) > 1)
+        {}
+        else{
+            return $toy_user_info[0]['toy_unique_id'];
+        }
+    }
+
+
+    /**
+     * 根据app 用户unique_id查找好友的微信号
+     * @param $toy_user_unique_id
+     * @return mixed
+     */
+    public function get_parent_wechat_user($toy_user_unique_id)
+    {
+        $wechat_user_info = $this->toy_wechat_relation_model->get_parent_wechat_user_by_toy_unique_id($toy_user_unique_id);
+        if(empty($wechat_user_info))
+        {}
+        else if(count($wechat_user_info) > 1)
+        {}
+        else{
+            return $wechat_user_info[0]['open_id'];
+        }
+    }
+
+
+
     /**
      * 处理好友关注、取消消息
      * @param $msg_data
+     * @return mixed
      */
     public function handle_relationship_msg($msg_data)
     {

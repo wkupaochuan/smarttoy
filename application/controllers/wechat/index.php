@@ -58,11 +58,10 @@ class Index extends  MY_Controller{
      */
     private function _send_msg_to_app($msg_data)
     {
+        $this->load->service('user/toy_wechat_relation_service');
+        // 处理关注事件
         if(strpos($msg_data['content'], 'gz:') === 0)
         {
-            $msg_data['xx'] = '关注';
-            $this->debug_log($msg_data);
-            $this->load->service('user/toy_wechat_relation_service');
             $this->toy_wechat_relation_service->handle_relationship_msg($msg_data);
         }
         else{
@@ -72,19 +71,20 @@ class Index extends  MY_Controller{
             , 'file' => HOME_URL. '/' . $msg_data['media_path']
             );
 
-            $from_user = 'test1';
-            $to_user = 'eb2c8e820c13836';
+            // todo 暂时统一使用admin用户发送消息
+            $from_user = 'admin';
+            // 获取app用户unique_id
+            $to_user = $this->toy_wechat_relation_service->get_child_toy_user($msg_data['from_username']);
 
             $url = '127.0.0.1:8090/im_server/servlet/ChatServlet?from_user='. $from_user
                 . '&to_user=' . $to_user . '&password=' . '&msg=' . json_encode($msg);
 
             $this->load->library('wechat/wechat_auth');
-            $res = $this->wechat_auth->https_request($url);
-//            $this->debug_log($msg_data);
+            $this->wechat_auth->https_request($url);
         }
     }
 
-    /************************************客服消息--end***********************************************************/
+    /************************************接收消息---end***********************************************************/
 
 
 
@@ -100,22 +100,22 @@ class Index extends  MY_Controller{
             $params = $this->input->post();
 
             // 获取参数
-            $toy_user = $params['toyUser'];
+            $toy_user_unique_id = $params['toyUser'];
             $msg_type = $params['messageType'];
             $msg_content = isset($params['content'])? $params['content']:'';
             $file_path = isset($params['filePath'])? $params['filePath']:'';
 
             // 获取接收人
-            $this->load->service('wechat/wechat_user_service');
-            $to_user = $this->wechat_user_service->get_parent_wechat_user($toy_user);
-            if(empty($toy_user))
+            $this->load->service('user/toy_wechat_relation_service');
+            $to_user_open_id = $this->toy_wechat_relation_service->get_parent_wechat_user($toy_user_unique_id);
+            if(empty($to_user_open_id))
             {
                 throw new Exception('找不到对应的接收人');
             }
 
             // 发送消息
             $this->load->service('wechat/custom_msg_service');
-            $this->custom_msg_service->send_msg($to_user, $msg_type, $msg_content, $file_path);
+            $this->custom_msg_service->send_msg($to_user_open_id, $msg_type, $msg_content, $file_path);
 
             $this->rest_success('', '发送消息成功');
         }
@@ -174,9 +174,12 @@ class Index extends  MY_Controller{
         $data = array(
 //            'filePath' => '123456.jpg'
 //            , 'messageType' => 'image'
-            'filePath' => '1424855307819.amr'
-            , 'messageType' => 'voice'
+//            'filePath' => '1424855307819.amr'
+//            , 'messageType' => 'voice'
+            'filePath' => ''
+            , 'messageType' => 'text'
             , 'toyUser' => 'eb2c8e820c13836'
+            , 'content' => 'ddd'
         );
         $res = $this->make_post_request($url, $data);
         print_r($res);exit;
