@@ -79,6 +79,10 @@
  * @property wechat_user_service                    $wechat_user_service
  * @property receive_wechat_msg_service             $receive_wechat_msg_service
  * @property toy_wechat_relation_service            $toy_wechat_relation_service
+ * @property app_msg_service                        $app_msg_service
+ * @property msg_type_enum_service                  $msg_type_enum_service
+ * @property wechat_msg_service                     $wechat_msg_service
+ *
  *
 
  */

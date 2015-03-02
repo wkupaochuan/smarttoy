@@ -66,6 +66,10 @@ class Index extends  MY_Controller{
             echo '';exit;
         }
 
+        // 记录微信消息
+        $this->load->service('msg/wechat_msg_service');
+        $this->wechat_msg_service->add_msg($msg_data['from_username'], $msg_data['msg_type'], $msg_data['media_path'], $msg_data['media_id'], $msg_data['content']);
+
         $this->load->service('user/toy_wechat_relation_service');
         // 处理关注事件
         if(strpos($msg_data['content'], 'gz:') === 0)
@@ -120,6 +124,10 @@ class Index extends  MY_Controller{
             {
                 throw new Exception('找不到对应的接收人');
             }
+
+            // 记录app消息
+            $this->load->service('msg/app_msg_service');
+            $this->app_msg_service->add_msg($toy_user_unique_id, $msg_type, $file_path, $msg_content);
 
             // 发送消息
             $this->load->service('wechat/custom_msg_service');
@@ -184,10 +192,10 @@ class Index extends  MY_Controller{
 //            , 'messageType' => 'image'
 //            'filePath' => '1424855307819.amr'
 //            , 'messageType' => 'voice'
-            'filePath' => ''
+            'filePath' => 'ddd'
             , 'messageType' => 'text'
             , 'toyUser' => 'eb2c8e820c13836'
-            , 'content' => 'ddd'
+            , 'content' => 'hahah测试消息里'
         );
         $res = $this->make_post_request($url, $data);
         print_r($res);exit;

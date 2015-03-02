@@ -15,6 +15,8 @@
  * @property user_wechat_model    $user_wechat_model
  * @property class_model        $class_model
  * @property toy_wechat_relation_model        $toy_wechat_relation_model
+ * @property app_msg_model        $app_msg_model
+ * @property wechat_msg_model        $wechat_msg_model
  *
  */
 class my_models
