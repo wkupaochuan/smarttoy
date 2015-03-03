@@ -9,10 +9,13 @@ class MY_Controller extends CI_Controller
 
     public function __construct()
 	{
-        // 记录请求日志
-        $this->_request_log();
-
 		parent::__construct();
+
+        if(!$this->input->is_cli_request())
+        {
+            // 记录请求日志
+            $this->_request_log();
+        }
 
         // 设置出错处理方法
         set_error_handler(function ($errno, $errstr, $errfile, $errline, $errcontext){

@@ -12,7 +12,7 @@ class wechat_user_service extends MY_Service{
         parent::__construct();
 
         $this->load->model('user/user_wechat_model');
-
+        $this->load->library('wechat/wechat_auth');
     }
 
 
@@ -36,6 +36,27 @@ class wechat_user_service extends MY_Service{
         }
 
         return true;
+    }
+
+
+
+    /**
+     * 从微信拉去用户全部信息
+     * @param $wechat_open_id
+     * @return null
+     */
+    public function get_user_info_from_wechat($wechat_open_id)
+    {
+        if(empty($wechat_open_id))
+        {
+            return null;
+        }
+
+        $access_token = $this->wechat_auth->get_access_token();
+        $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $access_token . '&openid=' . $wechat_open_id . '&lang=zh_CN';
+
+        $wechat_user_info = $this->wechat_auth->https_request($url);
+        return $wechat_user_info;
     }
 
 

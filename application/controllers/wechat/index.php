@@ -6,10 +6,6 @@
  */
 class Index extends  MY_Controller{
 
-    const TOKEN = 'xiaodudu';
-    const APP_ID = 'wxc7b4f0790c32423f';
-    const SECRET_KEY = '134696a01b8efdcfb2cc167f59968ddf ';
-
     public function __construct()
     {
         parent::__construct();
