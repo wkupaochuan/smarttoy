@@ -62,6 +62,30 @@ class wechat_user_service extends MY_Service{
 
 
 
+    /**
+     * 从微信拉取用户列表
+     * @param null $next_openid
+     * @return array
+     */
+    public function get_user_list_from_wechat($next_openid = null)
+    {
+        $access_token = $this->wechat_auth->get_access_token();
+        $url = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token='.$access_token.'&next_openid=';
+        if(!empty($next_openid))
+        {
+            $url .= $next_openid;
+        }
+
+        $res = $this->wechat_auth->https_request($url);
+
+        return array(
+            'user_list' => $res->data->openid
+            , 'next_open_id' => $res->next_openid
+        );
+    }
+
+
+
 /************************************private methods******************************************************************/
 
     /**

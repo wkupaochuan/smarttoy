@@ -3,7 +3,7 @@
 
 class update_user_info extends MY_Controller{
 
-    const LIMIT = 10;
+    const LIMIT = 100;
 
     public function __construct()
     {
@@ -11,7 +11,7 @@ class update_user_info extends MY_Controller{
 
         if(!$this->input->is_cli_request())
         {
-            throw new Exception('必须是cli执行');
+            throw new Exception('脚本必须以cli方式执行');
         }
 
         $this->load->database('default');
@@ -26,6 +26,8 @@ class update_user_info extends MY_Controller{
         {
             $start = $page * self::LIMIT;
             $users = $this->_get_users($start, self::LIMIT);
+
+            echo $start. '获取待完善用户' . count($users) . '个'. "\n";
 
             if(empty($users))
             {
@@ -71,6 +73,7 @@ class update_user_info extends MY_Controller{
                 $row['city'] = $full_user_info->city;
                 $row['province'] = $full_user_info->province;
                 $row['country'] = $full_user_info->country;
+                $row['subscribe_time'] = $full_user_info->subscribe_time;
                 $row['headimgurl'] = $full_user_info->headimgurl;
             }
         }
