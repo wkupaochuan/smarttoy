@@ -56,7 +56,7 @@ class Index extends  MY_Controller{
     private function _send_msg_to_app($msg_data)
     {
         // 内定的开发者才发送消息，其他用户屏蔽，以免影响账号的正常使用
-        $developers = array('og0UpuEhZ0No4K7Wf0DflsBYQzPE', 'og0UpuAo8aPWb-QqIugaB48gI94Q');
+        $developers = array('og0UpuEhZ0No4K7Wf0DflsBYQzPE', 'og0UpuAo8aPWb-QqIugaB48gI94Q', 'og0UpuDjngtyF1FsQoWrOix78sLA');
         if( !in_array($msg_data['from_username'], $developers))
         {
             echo '';exit;
