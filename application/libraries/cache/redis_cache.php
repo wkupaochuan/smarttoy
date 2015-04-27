@@ -14,6 +14,17 @@ class redis_cache {
         $this->_redis->connect('127.0.0.1',6379);
     }
 
+    public function expire($key, $expire)
+    {
+        $this->_redis->expire($key, $expire);
+    }
+
+    public function exists($key)
+    {
+        return $this->_redis->exists($key);
+    }
+
+
     /**
      * 设置值，并设置过期时间
      * @param $key
@@ -34,7 +45,13 @@ class redis_cache {
     public function get($key)
     {
         return $this->_redis->get($key);
+
     }
 
+
+    public function hMset($key, $data)
+    {
+        return $this->_redis->hMset($key, $data);
+    }
 
 } 

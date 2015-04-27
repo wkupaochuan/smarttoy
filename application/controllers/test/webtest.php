@@ -55,7 +55,7 @@ class Webtest extends  \CI_Controller{
 
     public function test_bubble_sort()
     {
-        $array_size = 1000;
+        $array_size = 100000;
         $a = array();
         for($i = 0; $i < $array_size; ++$i)
         {
@@ -67,12 +67,25 @@ class Webtest extends  \CI_Controller{
         $this->_cal_function_time('_bubble_sort_faster', $a);
         $this->_cal_function_time('_bubble_sort_fasest', $a);
         $this->_cal_function_time('_both_way_bubble_sort', $a);
+        $this->_cal_function_time('_quick_sort', $a);
+        $this->_cal_function_time('sort', $a);
     }
+
 
     private function _cal_function_time($private_method_name, $param)
     {
         $t1 = explode(' ', microtime());
-        $this->$private_method_name($param);
+        if($private_method_name == 'sort')
+        {
+            $private_method_name($param);
+        }
+        else if($private_method_name == '_quick_sort')
+        {
+            $this->$private_method_name(0, count($param) - 1, $param);
+        }
+        else{
+            $this->$private_method_name($param);
+        }
         $t2 = explode(' ', microtime());
         echo 'method:' . $private_method_name.' cost time----'.($t2[1]-$t1[1]).'s '.($t2[0]-$t1[0]).'ms<br>';
     }
@@ -96,6 +109,7 @@ class Webtest extends  \CI_Controller{
         print_r($count);echo '<br>';
         return $a;
     }
+
 
     private function _bubble_sort_faster($a)
     {
@@ -200,6 +214,40 @@ class Webtest extends  \CI_Controller{
 
         print_r($count);echo '<br>';
     }
+
+
+
+    private function _quick_sort($low, $high, & $array)
+    {
+        if($low < $high)
+        {
+            $pivot = $this->_partition($low, $high, $array);
+            $this->_quick_sort($low, $pivot -1 , $array);
+            $this->_quick_sort($pivot + 1, $high , $array);
+        }
+    }
+
+    private function _partition($low, $high, & $array)
+    {
+        // 找出参照标准、并挖坑
+        $pivot = $array[$low];
+
+        while($low < $high)
+        {
+            while($low < $high && $array[$high] >= $pivot ) --$high;
+            $array[$low] = $array[$high];
+
+            while($low < $high && $array[$low] <= $pivot) ++ $low;
+            $array[$high] = $array[$low];
+        }
+
+        $array[$low] = $pivot;
+        return $low;
+    }
+
+
+
+
 
 
 } 

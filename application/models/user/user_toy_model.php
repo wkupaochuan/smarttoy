@@ -13,38 +13,81 @@ class User_toy_model extends  CI_Model{
 
 
     /**
-     * 添加用户
-     * @param $toy_unique_id
+     * 新增
+     * @param $user
+     * @return mixed
      */
-    public function add_user_toy($toy_unique_id)
+    public function insert($user)
     {
-        $str_sql = <<<EOD
-            INSERT INTO $this->_table_name
-            (`toy_unique_id`)
-            VALUES ('$toy_unique_id')
-            ON DUPLICATE KEY UPDATE `toy_unique_id` = '$toy_unique_id'
-EOD;
-        $this->db->query($str_sql);
+        $this->db->insert($this->_table_name, $user);
+        return $this->db->insert_id();
     }
 
 
     /**
-     * 根据unique_id获取app用户信息
-     * @param $toy_user_unique_id
+     * 更新
+     * @param $user
+     * @param $where
+     */
+    public function update($user, $where)
+    {
+        $this->db->update($this->_table_name, $user, $where);
+    }
+
+
+    /**
+     * 查询
+     * @param $condition
+     * @param null $limit
+     * @param $offset
      * @return mixed
      */
-    public function get_user_by_unique_id($toy_user_unique_id)
+    public function get($condition, $limit = null, $offset = null)
     {
-        $str_sql = <<<EOD
-            SELECT
-                toy_id, toy_unique_id, toy_name, created_time
-            FROM
-                $this->_table_name
-            WHERE
-                toy_unique_id = '$toy_user_unique_id'
-EOD;
-        $query = $this->db->query($str_sql);
+        $this->_build_where_for_select($condition);
+        $this->_select_from();
+        $query = $this->db->get('', $limit, $offset);
         return $query->result_array();
+    }
+
+
+    /***************************************************** private methods **********************************************************************************************/
+
+    /**
+     * 查询
+     */
+    private function _select_from()
+    {
+        $this->db->from($this->_table_name);
+    }
+
+
+    /**
+     * 构造查询条件
+     * @param $condition
+     */
+    private function _build_where_for_select($condition)
+    {
+        foreach($condition as $search_key => $search_value)
+        {
+            $search_value = trim($search_value);
+            if(strlen($search_value) === 0)
+            {
+                continue;
+            }
+
+            switch($search_key)
+            {
+                case 'user_name':
+                    $this->db->where('user_name', $search_value);
+                    break;
+                case 'toy_unique_id':
+                    $this->db->where('toy_unique_id', $search_value);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 

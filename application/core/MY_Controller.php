@@ -15,19 +15,30 @@ class MY_Controller extends CI_Controller
         {
             // 记录请求日志
             $this->_request_log();
+
+            // 校验登陆状态
+            $this->_check_login();
         }
 
-        // 设置出错处理方法
-        set_error_handler(function ($errno, $errstr, $errfile, $errline, $errcontext){
-            // 记录错误日志
-            $url = $_SERVER['REQUEST_URI'];
-            $msg = date('Y-m-d H:i:s') . '  error -- '  . $url . ' -- ' . $errstr. ' in file  ' .$errfile . ' on line ' . $errline . '  ' . $errcontext . "\n";
-            $file_name = 'route_' . date('Y-m-d') . '.log';
-            $file_path = '/var/www/dev_tool/ToyAppApi/log/';
-            error_log($msg, 3, $file_path . $file_name);
-        }, E_ALL);
-
 	}
+
+
+    /**
+     * 校验登陆状态
+     */
+    private  function _check_login()
+    {
+        $params = $this->input->get_params();
+        if(!isset($params['access_token']))
+        {
+            $this->rest_fail('必须指定access_token');
+        }
+        if(!$this->session->check_login())
+        {
+            $this->rest_fail('请重新登陆');
+        }
+    }
+
 
 
     /**

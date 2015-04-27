@@ -20,6 +20,7 @@ class Toy_check_hook
 
     public function check_toy()
     {
+        return;
         // 获取参数
         $param = $_REQUEST;
         $toy_unique_id = isset($param['toy_unique_id'])? $param['toy_unique_id']:null;
@@ -32,7 +33,10 @@ class Toy_check_hook
 
             // 添加
             $CI->load->service('user/user_toy_service');
-            $CI->user_toy_service->add_user_toy($toy_unique_id);
+            $data = array(
+                'toy_unique_id' => $toy_unique_id
+            );
+            $CI->user_toy_service->insert($data);
         }
 
     }

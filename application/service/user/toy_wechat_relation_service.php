@@ -61,7 +61,10 @@ class toy_wechat_relation_service extends MY_Service{
         $msg_content = $msg_data['content'];
         $toy_user_unique_id = $this->_get_toy_user_unique_id_from_msg($msg_content);
         $this->load->model('user/user_toy_model');
-        $toy_user_info = $this->user_toy_model->get_user_by_unique_id($toy_user_unique_id);
+        $condition = array(
+            'toy_unique_id' => $toy_user_unique_id
+        );
+        $toy_user_info = $this->user_toy_model->get($condition);
         // todo 多个或者没有app用户
         if(empty($toy_user_info))
         {}
