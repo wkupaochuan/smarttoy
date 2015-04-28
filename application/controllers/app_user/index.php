@@ -68,4 +68,9 @@ class index extends \MY_Controller{
     }
 
 
+    public function test()
+    {
+        $this->rest_success('hello world');
+    }
+
 } 

@@ -19,7 +19,7 @@ class MY_Input extends CI_Input
      * @param $xss_clean
      * @return string
      */
-    public function get_params($index = NULL, $xss_clean)
+    public function get_params($index = NULL, $xss_clean = false)
     {
         $method = $_SERVER['REQUEST_METHOD'];
         if($method == 'POST')

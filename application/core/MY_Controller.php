@@ -17,27 +17,13 @@ class MY_Controller extends CI_Controller
             $this->_request_log();
 
             // 校验登陆状态
-            $this->_check_login();
+            if(!$this->_is_no_check_login_uri())
+            {
+                $this->_check_login();
+            }
         }
 
 	}
-
-
-    /**
-     * 校验登陆状态
-     */
-    private  function _check_login()
-    {
-        $params = $this->input->get_params();
-        if(!isset($params['access_token']))
-        {
-            $this->rest_fail('必须指定access_token');
-        }
-        if(!$this->session->check_login())
-        {
-            $this->rest_fail('请重新登陆');
-        }
-    }
 
 
 
@@ -57,29 +43,30 @@ class MY_Controller extends CI_Controller
      * @param $data
      * @param $msg
      */
-    public function rest_success($data, $msg = null)
+    public function rest_success($data, $msg = '')
     {
         $rest_data = array(
-            'data' => $data
+            'error_code' => $this->config->my_item('toy/app_error_code', 'success')
+            , 'data' => $data
             , 'msg' => $msg
         );
         echo json_encode($rest_data);
-
-        // 记录返回日志
-        $this->_response_log($rest_data);
         exit();
     }
+    
 
 
     /**
      * 请求失败
      * @param $msg
+     * @param $error_code
      */
-    public function rest_fail($msg){
-        echo json_encode($msg);
-
-        // 记录返回日志
-        $this->_response_log(null, $msg);
+    public function rest_fail($msg, $error_code = NULL){
+        $rest_data = array(
+            'error_code' => empty($error_code)? $this->config->my_item('toy/app_error_code', 'fail'):$error_code
+            , 'msg' => $msg
+        );
+        echo json_encode($rest_data);
         exit();
     }
 
@@ -156,6 +143,40 @@ class MY_Controller extends CI_Controller
         $file_name = 'route_' . date('Y-m-d') . '.log';
         $file_path = '/var/www/dev_tool/ToyAppApi/log/';
         error_log($msg . "\n", 3, $file_path . $file_name);
+    }
+
+    /**
+     * 校验登陆状态
+     */
+    private  function _check_login()
+    {
+        $params = $this->input->get_params();
+        if(!isset($params['access_token']) || !$this->session->check_login($params['access_token']))
+        {
+            $this->rest_fail('登陆过期', $this->config->my_item('toy/app_error_code', 'login_expire'));
+        }
+    }
+
+
+    /**
+     * 校验是否是不需要校验登陆的请求
+     */
+    private function _is_no_check_login_uri()
+    {
+        $request_uri = $_SERVER['REQUEST_URI'];
+
+        $pos = strpos($request_uri, '?');
+        if($pos)
+        {
+            $request_uri = substr($request_uri, 0, $pos);
+        }
+
+        $out_uri_array = array(
+            '/app_user/index/login'
+            , '/app_user/index/register'
+        );
+
+        return in_array($request_uri, $out_uri_array);
     }
 
 }
