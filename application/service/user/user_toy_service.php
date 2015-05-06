@@ -57,6 +57,47 @@ class User_toy_service extends MY_Service{
     }
 
 
+    /**
+     * 更新用户信息
+     * @param $params
+     * @param $toy_user_id
+     */
+    public function update_user($params, $toy_user_id)
+    {
+        $where = array(
+            'id' => $toy_user_id
+        );
+
+        $user_data = array();
+
+        // 头像
+        if(isset($params['face_url']) && !empty($params['face_url']))
+        {
+            $user_data['face_url'] = $params['face_url'];
+        }
+
+        // 昵称
+        if(isset($params['nick_name']) && !empty($params['nick_name']))
+        {
+            $user_data['nick_name'] = $params['nick_name'];
+        }
+
+        // 生日
+        if(isset($params['birhday']) && !empty($params['birhday']))
+        {
+            $user_data['birhday'] = $params['birhday'];
+        }
+
+        // 性别
+        if(isset($params['sex']) && !empty($params['sex']))
+        {
+            $user_data['sex'] = $params['sex'];
+        }
+
+        $this->user_toy_model->update($user_data,$where);
+    }
+
+
 
     /*****************************************private methods*************************************************/
 

@@ -75,4 +75,30 @@ class index extends \MY_Controller{
         $this->rest_success($res);
     }
 
+
+    /**
+     * 设置用户信息
+     */
+    public function update_user_info()
+    {
+        $params = $this->input->get_params();
+
+        $user = $this->session->get_user_info();
+
+        $this->user_toy_service->update_user($params, $user['id']);
+
+        $this->rest_success('');
+    }
+
+
+    /**
+     * 上传头像
+     */
+    public function upload_face_url()
+    {
+        $res = $this->resources_path->upload_toy_face_url();
+
+        $this->rest_success($res);
+    }
+
 } 
