@@ -83,8 +83,10 @@ class wechat_user_service extends MY_Service{
             $user = array(
                 'subscribe_status' => 0
             );
-
+            // 更新关注状态
             $this->user_wechat_model->update($user, $where);
+
+            // 更新对应的app用户的绑定状态
         }
     }
 
@@ -154,6 +156,19 @@ class wechat_user_service extends MY_Service{
 
 /************************************private methods******************************************************************/
 
+
+    private function update_wechat_relation_status_by_wechat_user_id($wechat_user_id)
+    {
+        if(empty($wechat_user_id))
+        {
+            return null;
+        }
+
+        $this->load->service('user/user_toy_service');
+        $where = array();
+        $toy_users = $this->user_toy_service->get_user_toy_list();
+
+    }
 
 
 } 

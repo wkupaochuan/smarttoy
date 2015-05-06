@@ -27,7 +27,6 @@ class User_toy_service extends MY_Service{
     }
 
 
-
     /**
      * 注册
      * @param $user_name

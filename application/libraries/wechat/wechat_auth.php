@@ -55,7 +55,7 @@ class wechat_auth {
     {
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".self::APP_ID."&secret=".self::SECRET_KEY;
         $ret = $this->https_request($url);
-        echo '向微信获取access_token:'.$ret->access_token;
+//        echo '向微信获取access_token:'.$ret->access_token;
         return $ret->access_token;
     }
 

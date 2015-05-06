@@ -9,6 +9,7 @@ class receive_wechat_msg_service extends MY_Service{
         // 加载微信帮助类
         $this->load->library('wechat/wechat_auth');
         $this->load->service('user/wechat_user_service');
+        $this->load->model('user/user_toy_model');
     }
 
 
@@ -185,8 +186,16 @@ class receive_wechat_msg_service extends MY_Service{
         );
         $wechat_user = $this->wechat_user_service->get_user_info($where);
 
+        // 添加好友关系
         $this->load->service('user/toy_wechat_relation_service');
-        return $this->toy_wechat_relation_service->add_relation($toy_user_id, $wechat_user['id']);
+        $relation_id = $this->toy_wechat_relation_service->add_relation($toy_user_id, $wechat_user['id']);
+
+        // 更新app用户的好友绑定状态
+        $new_user = array('wechat_relation_status' => 1);
+        $where = array('id' => $toy_user_id);
+        $this->user_toy_model->update($new_user, $where);
+
+        return $relation_id;
     }
 
 

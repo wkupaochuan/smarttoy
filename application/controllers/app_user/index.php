@@ -64,13 +64,15 @@ class index extends \MY_Controller{
         $user_info = current($exists_list);
 
         $access_token = $this->session->login($user_info);
-        $this->rest_success(array('access_token' => $access_token));
-    }
 
+        $res = array(
+            'toy_user_id' => $user_info['id']
+            , 'user_name' => $user_info['user_name']
+            , 'wechat_relation_status' => $user_info['wechat_relation_status']
+            , 'access_token' => $access_token
+        );
 
-    public function test()
-    {
-        $this->rest_success('hello world');
+        $this->rest_success($res);
     }
 
 } 
