@@ -11,6 +11,29 @@ class toy_wechat_relation_model extends CI_Model{
 
 
     /**
+     * 新增
+     * @param $relation
+     * @return mixed
+     */
+    public function insert($relation)
+    {
+        $this->db->insert($this->_table_name, $relation);
+        return $this->db->insert_id();
+    }
+
+
+    /**
+     * 更新
+     * @param $relation
+     * @param $where
+     */
+    public function update($relation, $where)
+    {
+        $this->db->update($this->_table_name, $relation, $where);
+    }
+
+
+    /**
      * 新增好友关系
      * @param $toy_id
      * @param $weixin_id

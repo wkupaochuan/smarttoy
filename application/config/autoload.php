@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('session', 'cache/redis_cache');
+$autoload['libraries'] = array('session', 'cache/redis_cache', 'log');
 
 
 /*

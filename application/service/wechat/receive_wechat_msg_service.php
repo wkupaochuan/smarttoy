@@ -8,27 +8,20 @@ class receive_wechat_msg_service extends MY_Service{
 
         // 加载微信帮助类
         $this->load->library('wechat/wechat_auth');
+        $this->load->service('user/wechat_user_service');
     }
 
 
     /*******************************************************public methods*****************************************************************************/
 
 
+    /**
+     * 解析消息
+     * @param bool $download_media
+     * @return array
+     */
     public function get_msg($download_media = false)
     {
-        // todo for test
-//        $res = array(
-//            'from_username' => 'og0UpuEhZ0No4K7Wf0DflsBYQzPE'
-//        , 'to_username' => 'gh_f3e29636ebd7'
-//        , 'msg_type' => 'text'
-//        , 'media_id' => ''
-//        , 'media_path' => ''
-//        , 'content' => 'jj'
-//        , 'event' => ''
-//        );
-//
-//        return $res;
-
         $res = array();
         //get post data, May be due to the different environments
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
@@ -60,6 +53,8 @@ class receive_wechat_msg_service extends MY_Service{
             , 'media_path' => $media_path
             , 'content' => (string)$postObj->Content
             , 'event' => (string)$postObj->Event
+            , 'event_key' => isset($postObj->EventKey)? (string)$postObj->EventKey:''
+            , 'ticket' => isset($postObj->ticket)? (string)$postObj->ticket:''
         );
 
         return $res;
@@ -67,26 +62,26 @@ class receive_wechat_msg_service extends MY_Service{
 
 
     /**
-     * 发送文字消息
-     * @param $to_username
-     * @param $devepoer_username
-     * @param $content
+     * 处理微信推送的消息
+     * @param $msg
      */
-    public function send_text_msg($to_username, $devepoer_username, $content)
+    public function handle_msg($msg)
     {
-        $created_time = time();
-        $textTpl = "<xml>
-                        <ToUserName><![CDATA[%s]]></ToUserName>
-                        <FromUserName><![CDATA[%s]]></FromUserName>
-                        <CreateTime>%s</CreateTime>
-                        <MsgType><![CDATA[%s]]></MsgType>
-                        <Content><![CDATA[%s]]></Content>
-                        <FuncFlag>0</FuncFlag>
-                    </xml>";
-        $resultStr = sprintf($textTpl, $to_username, $devepoer_username, $created_time, 'text', $content);//格式化写入XML
-        echo $resultStr;//发送
-        exit;
+        switch($msg['msg_type'])
+        {
+            case 'text':
+            case 'voice':
+//                $this->_send_msg_to_app($msg);
+//                $this->receive_wechat_msg_service->send_text_msg($msg['from_username'], $msg['to_username'], '消息发送成功');
+                break;
+            case 'event':
+                $this->_handle_event_msg($msg);
+                break;
+        }
     }
+
+
+
 
 
     /*******************************************************private methods*****************************************************************************/
@@ -109,5 +104,86 @@ class receive_wechat_msg_service extends MY_Service{
 
         return $download_file_path;
     }
+
+
+    /**
+     * 处理event类型的消息
+     * @param $msg
+     */
+    private function _handle_event_msg($msg)
+    {
+        $this->log->write_log('debug', $msg);
+        switch($msg['event'])
+        {
+            // 关注或者扫描二维码
+            case 'subscribe':
+                $this->_handle_subscribe_event($msg);
+                break;
+            // 取消关注
+            case 'unsubscribe':
+                $this->_handle_unsubscribe_event($msg);
+                break;
+            // 扫描二维码
+            case 'SCAN':
+                $this->_handle_scan_event($msg['from_username'], $msg['to_username'], $msg['event_key']);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    /**
+     * 处理subscribe类型的event
+     * @param $msg
+     */
+    private function _handle_subscribe_event($msg)
+    {
+        // 添加微信关注者用户
+        $this->wechat_user_service->subscribe($msg['from_username'], $msg['to_username']);
+
+        // 未关注者扫描二维码事件
+        if(!empty($msg_data['ticket']))
+        {
+            // 处理二维码扫描事件
+            $event_key = $msg['event_key'];
+            $scene_id = substr($event_key, strpos($event_key, '_') + 1);
+            $this->_handle_scan_event($msg['from_username'], $msg['to_username'], $scene_id);
+        }
+    }
+
+
+    /**
+     * 处理subscribe类型的event
+     * @param $msg
+     */
+    private function _handle_unsubscribe_event($msg)
+    {
+        // 添加微信关注者用户
+        $this->wechat_user_service->unsubscribe($msg['from_username'], $msg['to_username']);
+    }
+
+
+    /**
+     * 处理二维码扫描事件
+     * @param $open_id
+     * @param $developer_weixin_name
+     * @param $scene_id
+     * @return mixed
+     */
+    private function _handle_scan_event($open_id, $developer_weixin_name, $scene_id)
+    {
+        $toy_user_id = $scene_id;
+
+        $where = array(
+            'open_id' => $open_id
+        , 'developer_weixin_name' => $developer_weixin_name
+        );
+        $wechat_user = $this->wechat_user_service->get_user_info($where);
+
+        $this->load->service('user/toy_wechat_relation_service');
+        return $this->toy_wechat_relation_service->add_relation($toy_user_id, $wechat_user['id']);
+    }
+
 
 } 

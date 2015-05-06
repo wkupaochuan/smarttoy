@@ -5,6 +5,8 @@ class User_toy_model extends  CI_Model{
     // 表名称
     private $_table_name = 'toy_user_toy';
 
+    /***************************************************** public methods **********************************************************************************************/
+
     public function __construct()
     {
         parent::__construct();

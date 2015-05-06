@@ -9,6 +9,7 @@ class Index extends  MY_Controller{
     public function __construct()
     {
         parent::__construct();
+
     }
 
 
@@ -20,6 +21,9 @@ class Index extends  MY_Controller{
      */
     public function dispatch()
     {
+        $this->log->write_log('debug', '我在测试');
+        $this->log->write_log('debug', var_export($_GET, true));
+
         if (isset($_GET['echostr'])) {
             echo $_GET['echostr'];exit;
         }else{
@@ -27,18 +31,7 @@ class Index extends  MY_Controller{
                 $this->load->service('wechat/receive_wechat_msg_service');
                 $msg_data = $this->receive_wechat_msg_service->get_msg(true);
 
-                switch($msg_data['msg_type'])
-                {
-                    case 'text':
-                    case 'voice':
-                        $this->_send_msg_to_app($msg_data);
-                        $this->receive_wechat_msg_service->send_text_msg($msg_data['from_username'], $msg_data['to_username'], '消息发送成功');
-                        break;
-                    case 'event':
-                        $this->load->service('wechat/wechat_user_service');
-                        $this->wechat_user_service->handle_user_subscribe_event($msg_data);
-                        break;
-                }
+                $this->receive_wechat_msg_service->handle_msg($msg_data);
             }
             catch(Exception $e)
             {
@@ -172,6 +165,64 @@ class Index extends  MY_Controller{
             move_uploaded_file($tempFile,$targetFile);
         }
     }
+
+
+
+    /************************************ 二维码 --begin ***********************************************************/
+
+
+    /**
+     * 获取临时二维码
+     */
+    public function get_qrcode()
+    {
+        try{
+            $params = $this->input->get_params();
+
+            // 获取登陆用户的信息
+            $user_info = array();
+
+//            $scene_id = $user_info['user_id'];
+
+            $this->load->service('wechat/qrcode_service');
+            $res = $this->qrcode_service->create_qrcode(12);
+            $this->rest_success($res);
+        }
+        catch(Exception $e){
+            $this->rest_fail($e->getMessage());
+        }
+
+    }
+
+    /************************************ 二维码--end ***********************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**********************************************测试 方法**************************************************************************************/

@@ -13,9 +13,15 @@ class wechat_auth {
 
 
     // buct
+//    const TOKEN = 'xiaodudu';
+//    const APP_ID = 'wx4edc66c8e1529915';
+//    const SECRET_KEY = '2e900bfa25e55b681f8bbf8ceb62ca3d';
+
+
+    // wentong
     const TOKEN = 'xiaodudu';
-    const APP_ID = 'wx4edc66c8e1529915';
-    const SECRET_KEY = '2e900bfa25e55b681f8bbf8ceb62ca3d';
+    const APP_ID = 'wx4f3bcf1893bea033';
+    const SECRET_KEY = '2b04cc3f4574446234bfdee0bcb295b0';
 
 
     // 微信access token 的redis key

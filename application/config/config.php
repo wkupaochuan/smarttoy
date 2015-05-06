@@ -180,7 +180,7 @@ $config['directory_trigger']	= 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0; // 关闭错误记录，在controller 使用自己的日志
+$config['log_threshold'] = 2;
 
 /*
 |--------------------------------------------------------------------------

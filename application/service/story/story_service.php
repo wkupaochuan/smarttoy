@@ -10,6 +10,9 @@ class Story_service extends MY_Service{
     }
 
 
+    /************************************ public methods ************************************************************/
+
+
     /**
      * 搜索故事
      * @param $search_words
@@ -31,14 +34,18 @@ class Story_service extends MY_Service{
 
         if(!empty($search_words)){
             // 根据搜索条件获取故事列表
-            $res = $this->get_most_similar_storys($search_words, $all_storys);
+            $all_storys = $this->_get_most_similar_storys($search_words, $all_storys);
         }
-        else{
-            $res = $all_storys;
-        }
+
+        // 返回10条
+        $res = array_slice($all_storys, 0, 10);
 
         return $res;
     }
+
+
+
+    /************************************ private methods ************************************************************/
 
 
     /**
@@ -47,7 +54,7 @@ class Story_service extends MY_Service{
      * @param $story_list
      * @return array
      */
-    private function get_most_similar_storys($search_words, $story_list)
+    private function _get_most_similar_storys($search_words, $story_list)
     {
         foreach($story_list as & $story)
         {
@@ -56,7 +63,6 @@ class Story_service extends MY_Service{
 
         $story_list = $this->array_sort($story_list, 'similarity', 'desc');
 
-        $story_list = array_slice($story_list, 0, 6);
         return $story_list;
     }
 

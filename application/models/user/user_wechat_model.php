@@ -11,53 +11,51 @@ class user_wechat_model extends CI_Model{
     // 表名称
     private $_table_name = 'toy_user_wechat';
 
+    /***************************************************** public methods **********************************************************************************************/
+
     public function __construct()
     {
         parent::__construct();
         $this->load->database('default');
     }
 
-
     /**
-     * 添加用户
-     * @param $open_id
-     * @param $developer_weixin_name
+     * 新增
+     * @param $user
      * @return mixed
      */
-    public function add_user($open_id, $developer_weixin_name)
+    public function insert($user)
     {
-        $subscribe_time = time();
-
-        $str_sql = <<<EOD
-            INSERT INTO {$this->_table_name} (`open_id`, `subscribe_time`, `developer_weixin_name`)
-            VALUES
-                ('$open_id', $subscribe_time, '$developer_weixin_name')
-                ON DUPLICATE KEY UPDATE `subscribe_time` = $subscribe_time, `subscribe_status` = 1
-EOD;
-        $this->db->query($str_sql);
+        $this->db->insert($this->_table_name, $user);
         return $this->db->insert_id();
+    }
+
+
+    /**
+     * 更新
+     * @param $user
+     * @param $where
+     */
+    public function update($user, $where)
+    {
+        $this->db->update($this->_table_name, $user, $where);
     }
 
 
 
     /**
-     * 用户取消关注
-     * @param $open_id
-     * @param $developer_weixin_name
+     * 查询
+     * @param $condition
+     * @param null $limit
+     * @param $offset
+     * @return mixed
      */
-    public function user_unsubscribe($open_id, $developer_weixin_name)
+    public function get($condition, $limit = null, $offset = null)
     {
-        $unsubscribe_time = time();
-
-        $str_sql = <<<EOD
-            UPDATE {$this->_table_name}
-            SET subscribe_status = 0,
-             unsubscribe_time = $unsubscribe_time
-            WHERE
-                open_id = '$open_id'
-            AND developer_weixin_name = '$developer_weixin_name'
-EOD;
-        $this->db->query($str_sql);
+        $this->_build_where_for_select($condition);
+        $this->_select_from();
+        $query = $this->db->get('', $limit, $offset);
+        return $query->result_array();
     }
 
 
@@ -81,5 +79,48 @@ EOD;
         return $query->result_array();
     }
 
+    /***************************************************** private methods **********************************************************************************************/
+
+
+
+    /**
+     * 查询
+     */
+    private function _select_from()
+    {
+        $this->db->from($this->_table_name);
+    }
+
+
+    /**
+     * 构造查询条件
+     * @param $condition
+     */
+    private function _build_where_for_select($condition)
+    {
+        foreach($condition as $search_key => $search_value)
+        {
+            $search_value = trim($search_value);
+            if(strlen($search_value) === 0)
+            {
+                continue;
+            }
+
+            switch($search_key)
+            {
+                case 'open_id':
+                    $this->db->where('open_id', $search_value);
+                    break;
+                case 'developer_weixin_name':
+                    $this->db->where('developer_weixin_name', $search_value);
+                    break;
+                case 'subscribe_status':
+                    $this->db->where('subscribe_status', $search_value);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
 } 

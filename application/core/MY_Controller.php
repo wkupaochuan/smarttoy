@@ -53,7 +53,7 @@ class MY_Controller extends CI_Controller
         echo json_encode($rest_data);
         exit();
     }
-    
+
 
 
     /**
@@ -112,18 +112,6 @@ class MY_Controller extends CI_Controller
 
 
     /**
-     * 记录返回日志
-     * @param $data
-     * @param $msg
-     */
-    private function _response_log($data, $msg = '')
-    {
-        $url = $_SERVER['REQUEST_URI'];
-        $this->_log(date('Y-m-d H:i:s') . '  response -- '  . $url . " data\n  " .print_r($data, true). $msg);
-    }
-
-
-    /**
      * 记录调试日志
      * @param $data
      */
@@ -174,9 +162,14 @@ class MY_Controller extends CI_Controller
         $out_uri_array = array(
             '/app_user/index/login'
             , '/app_user/index/register'
+            , '/wechat/index/dispatch'
         );
 
-        return in_array($request_uri, $out_uri_array);
+        $out_uri_tmp = array(
+            '/wechat/index/get_qrcode'
+        );
+
+        return in_array($request_uri, array_merge($out_uri_array, $out_uri_tmp));
     }
 
 }

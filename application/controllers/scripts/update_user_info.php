@@ -15,7 +15,7 @@ class update_user_info extends MY_Controller{
         }
 
         $this->load->database('default');
-        $this->load->service('wechat/wechat_user_service');
+        $this->load->service('user/wechat_user_service');
     }
 
 
