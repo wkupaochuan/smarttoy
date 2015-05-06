@@ -31,6 +31,17 @@ class MY_Session extends CI_Session{
     }
 
 
+
+    /**
+     * 从session中获取当前登录用户的信息
+     * @return mixed
+     */
+    public function get_user_info()
+    {
+        return $this->_ci->redis_cache->hGetAll($_SESSION['access_token']);
+    }
+
+
     /**
      * 更新session信息
      * @param $user_info

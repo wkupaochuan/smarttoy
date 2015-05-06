@@ -41,15 +41,20 @@ class qrcode_service extends MY_Service{
                     "action_name": "QR_SCENE",
                     "action_info": {
                         "scene": {
-                            "scene_id": 1000
+                            "scene_id": {$scene_id}
                         }
                     }
                 }
 EOD;
 
-        $res = $this->wechat_auth->https_request($url, $body);
+        $qr_code_info = $this->wechat_auth->https_request($url, $body);
 
-        $res['qr_code_url'] = self::SHOW_QRCODE_URL . $res['ticket'];
+        $res = array(
+            'ticket' => $qr_code_info->ticket
+            , 'expire_seconds' => $qr_code_info->expire_seconds
+            , 'url' => $qr_code_info->url
+            , 'qr_code_url' => self::SHOW_QRCODE_URL . $qr_code_info->ticket
+        );print_r($res);
         return $res;
     }
 

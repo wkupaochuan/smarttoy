@@ -142,8 +142,11 @@ class receive_wechat_msg_service extends MY_Service{
         // 添加微信关注者用户
         $this->wechat_user_service->subscribe($msg['from_username'], $msg['to_username']);
 
+        // debug
+        $this->log->write_log('debug', '关注事件:'.var_export($msg, true));
+
         // 未关注者扫描二维码事件
-        if(!empty($msg_data['ticket']))
+        if(!empty($msg['event_key']))
         {
             // 处理二维码扫描事件
             $event_key = $msg['event_key'];
@@ -173,6 +176,7 @@ class receive_wechat_msg_service extends MY_Service{
      */
     private function _handle_scan_event($open_id, $developer_weixin_name, $scene_id)
     {
+        $this->log->write_log('debug', '扫描事件, 场景ID:' . $scene_id);
         $toy_user_id = $scene_id;
 
         $where = array(

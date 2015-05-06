@@ -4,6 +4,8 @@ class toy_wechat_relation_model extends CI_Model{
 
     private $_table_name = 'toy_user_toy_wechat_relationship';
 
+    /***************************************************** public methods **********************************************************************************************/
+
     public function __construct(){
         parent::__construct();
         $this->load->database('default');
@@ -31,26 +33,6 @@ class toy_wechat_relation_model extends CI_Model{
     {
         $this->db->update($this->_table_name, $relation, $where);
     }
-
-
-    /**
-     * 新增好友关系
-     * @param $toy_id
-     * @param $weixin_id
-     * @return mixed
-     */
-    public function add_relationship($toy_id, $weixin_id)
-    {
-        $sql = <<<EOD
-            INSERT INTO $this->_table_name (toy_id, weixin_id)
-            VALUES
-                ($toy_id, $weixin_id)
-EOD;
-
-        $this->db->query($sql);
-        return $this->db->insert_id();
-    }
-
 
     /**
      * 查找app用户对应的微信好友
@@ -94,5 +76,65 @@ EOD;
         $query = $this->db->query($sql);
         return $query->result_array();
     }
+
+
+    /**
+     * 查询
+     * @param $condition
+     * @param null $limit
+     * @param $offset
+     * @return mixed
+     */
+    public function get($condition, $limit = null, $offset = null)
+    {
+        $this->_build_where_for_select($condition);
+        $this->_select_from();
+        $query = $this->db->get('', $limit, $offset);
+        return $query->result_array();
+    }
+
+
+    /***************************************************** private methods **********************************************************************************************/
+
+
+
+    /**
+     * 查询
+     */
+    private function _select_from()
+    {
+        $this->db->from($this->_table_name);
+    }
+
+
+    /**
+     * 构造查询条件
+     * @param $condition
+     */
+    private function _build_where_for_select($condition)
+    {
+        foreach($condition as $search_key => $search_value)
+        {
+            $search_value = trim($search_value);
+            if(strlen($search_value) === 0)
+            {
+                continue;
+            }
+
+            switch($search_key)
+            {
+                case 'toy_user_id':
+                    $this->db->where('toy_user_id', $search_value);
+                    break;
+                case 'wechat_user_id':
+                    $this->db->where('wechat_user_id', $search_value);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+
 
 } 

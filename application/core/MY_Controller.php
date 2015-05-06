@@ -166,7 +166,7 @@ class MY_Controller extends CI_Controller
         );
 
         $out_uri_tmp = array(
-            '/wechat/index/get_qrcode'
+//            '/wechat/index/get_qrcode'
         );
 
         return in_array($request_uri, array_merge($out_uri_array, $out_uri_tmp));

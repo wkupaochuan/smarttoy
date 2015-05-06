@@ -54,4 +54,11 @@ class redis_cache {
         return $this->_redis->hMset($key, $data);
     }
 
+    public function hGetAll($key)
+    {
+        return $this->_redis->hGetAll($key);
+    }
+
+
+
 } 

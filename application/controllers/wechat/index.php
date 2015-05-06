@@ -21,9 +21,6 @@ class Index extends  MY_Controller{
      */
     public function dispatch()
     {
-        $this->log->write_log('debug', '我在测试');
-        $this->log->write_log('debug', var_export($_GET, true));
-
         if (isset($_GET['echostr'])) {
             echo $_GET['echostr'];exit;
         }else{
@@ -180,12 +177,11 @@ class Index extends  MY_Controller{
             $params = $this->input->get_params();
 
             // 获取登陆用户的信息
-            $user_info = array();
-
-//            $scene_id = $user_info['user_id'];
+            $user_info = $this->session->get_user_info();
+            $scene_id = $user_info['id'];
 
             $this->load->service('wechat/qrcode_service');
-            $res = $this->qrcode_service->create_qrcode(12);
+            $res = $this->qrcode_service->create_qrcode($scene_id);
             $this->rest_success($res);
         }
         catch(Exception $e){

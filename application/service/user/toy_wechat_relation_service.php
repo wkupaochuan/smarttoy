@@ -59,11 +59,17 @@ class toy_wechat_relation_service extends MY_Service{
      */
     public function add_relation($toy_user_id, $wechat_user_id)
     {
-        $data = array(
+        $where = array(
             'toy_user_id' => $toy_user_id
             , 'wechat_user_id' => $wechat_user_id
         );
-        return $this->toy_wechat_relation_model->insert($data);
+        $exists_relations = $this->toy_wechat_relation_model->get($where);
+
+        $this->log->write_log('debug', '添加关系，已有关系:'.var_export($exists_relations, true));
+        if(empty($exists_relations))
+        {
+            return $this->toy_wechat_relation_model->insert($where);
+        }
     }
 
 
