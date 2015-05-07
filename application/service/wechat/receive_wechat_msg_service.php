@@ -72,6 +72,9 @@ class receive_wechat_msg_service extends MY_Service{
         {
             case 'text':
             case 'voice':
+            case 'image':
+                $this->load->service('msg/wechat_msg_service');
+                $this->wechat_msg_service->handle_normal_msg_from_wechat($msg);
 //                $this->_send_msg_to_app($msg);
 //                $this->receive_wechat_msg_service->send_text_msg($msg['from_username'], $msg['to_username'], '消息发送成功');
                 break;
@@ -197,6 +200,5 @@ class receive_wechat_msg_service extends MY_Service{
 
         return $relation_id;
     }
-
 
 } 

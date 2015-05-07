@@ -34,49 +34,6 @@ class toy_wechat_relation_model extends CI_Model{
         $this->db->update($this->_table_name, $relation, $where);
     }
 
-    /**
-     * 查找app用户对应的微信好友
-     * @param $toy_unique_id
-     * @return mixed
-     */
-    public function get_parent_wechat_user_by_toy_unique_id($toy_unique_id)
-    {
-        $sql = <<<EOD
-            select wechat.open_id, wechat.developer_weixin_name from toy_user_toy as toy
-            left join toy_user_toy_wechat_relationship as relation on relation.toy_id = toy.toy_id
-            left join toy_user_wechat as wechat on relation.weixin_id = wechat.id
-            where wechat.open_id is  not null and toy.toy_unique_id = '{$toy_unique_id}'
-EOD;
-
-        $query = $this->db->query($sql);
-        return $query->result_array();
-    }
-
-
-    /**
-     * 根据微信用户，查找app用户
-     * @param $wechat_open_id
-     * @return mixed
-     */
-    public function get_child_toy_user_by_wechat_open_id($wechat_open_id)
-    {
-        $sql = <<<EOD
-            SELECT
-                toy.toy_id,
-                toy.toy_unique_id
-            FROM
-                toy_user_wechat AS wechat
-            LEFT JOIN toy_user_toy_wechat_relationship AS relation ON relation.weixin_id = wechat.id
-            LEFT JOIN toy_user_toy AS toy ON relation.toy_id = toy.toy_id
-            WHERE
-                wechat.open_id IS NOT NULL
-            AND wechat.open_id = '{$wechat_open_id}'
-EOD;
-
-        $query = $this->db->query($sql);
-        return $query->result_array();
-    }
-
 
     /**
      * 查询
@@ -89,6 +46,7 @@ EOD;
     {
         $this->_build_where_for_select($condition);
         $this->_select_from();
+        $this->_build_select();
         $query = $this->db->get('', $limit, $offset);
         return $query->result_array();
     }
@@ -97,6 +55,15 @@ EOD;
     /***************************************************** private methods **********************************************************************************************/
 
 
+    private function _build_select()
+    {
+        $select = <<<EOD
+            toy_user.id as toy_user_id, wechat_user.id as wechat_user_id, toy_user.user_name, toy_user.nick_name
+EOD;
+
+        $this->db->select($select);
+    }
+
 
     /**
      * 查询
@@ -104,6 +71,8 @@ EOD;
     private function _select_from()
     {
         $this->db->from($this->_table_name);
+        $this->db->join('toy_user_toy toy_user', 'toy_user_toy.id = toy_user_toy_wechat_relationship.toy_user_id', 'left');
+        $this->db->join('toy_user_wechat wechat_user', 'wechat_user.id = toy_user_toy_wechat_relationship.wechat_user_id', 'left');
     }
 
 
@@ -124,10 +93,10 @@ EOD;
             switch($search_key)
             {
                 case 'toy_user_id':
-                    $this->db->where('toy_user_id', $search_value);
+                    $this->db->where('toy_user.id', $search_value);
                     break;
                 case 'wechat_user_id':
-                    $this->db->where('wechat_user_id', $search_value);
+                    $this->db->where('wechat_user.id', $search_value);
                     break;
                 default:
                     break;

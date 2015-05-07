@@ -51,6 +51,18 @@ class msg_type_enum_service extends MY_Service{
     }
 
 
+
+    /**
+     * 根据微信消息类型获取本系统消息类型
+     * @param $wechat_msg_type
+     * @return bool
+     */
+    public function get_msg_type_by_wechat_msg_type($wechat_msg_type)
+    {
+        $dic = array_flip($this->_msg_type_id_display_map);
+        return isset($dic[$wechat_msg_type])? $dic[$wechat_msg_type]:null;
+    }
+
     /******************************private methods*********************************************************************************************************/
 
 

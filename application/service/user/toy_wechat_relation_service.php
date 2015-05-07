@@ -13,23 +13,15 @@ class toy_wechat_relation_service extends MY_Service{
  /****************************public methods******************************************************************************************/
 
 
-
-
     /**
      * 根据微信用户，查找app用户
-     * @param $toy_wechat_open_id
+     * @param $wechat_user_id
      * @return mixed
      */
-    public function get_child_toy_user($toy_wechat_open_id)
+    public function get_child_toy_users($wechat_user_id)
     {
-        $toy_user_info = $this->toy_wechat_relation_model->get_child_toy_user_by_wechat_open_id($toy_wechat_open_id);
-        if(empty($toy_user_info))
-        {}
-        else if(count($toy_user_info) > 1)
-        {}
-        else{
-            return $toy_user_info[0]['toy_unique_id'];
-        }
+        $where = array('wechat_user_id' => $wechat_user_id);
+        return $this->toy_wechat_relation_model->get($where);
     }
 
 

@@ -14,8 +14,6 @@ class Index extends  MY_Controller{
 
 
     /************************************接收消息--begin***********************************************************/
-
-
     /**
      * 接收微信消息
      */
@@ -25,9 +23,11 @@ class Index extends  MY_Controller{
             echo $_GET['echostr'];exit;
         }else{
             try{
+                // 解析消息
                 $this->load->service('wechat/receive_wechat_msg_service');
                 $msg_data = $this->receive_wechat_msg_service->get_msg(true);
 
+                // 处理消息
                 $this->receive_wechat_msg_service->handle_msg($msg_data);
             }
             catch(Exception $e)
@@ -36,50 +36,6 @@ class Index extends  MY_Controller{
             }
         }
         echo '';exit;
-    }
-
-
-    /**
-     * 发送消息给app用户
-     * @param $msg_data
-     */
-    private function _send_msg_to_app($msg_data)
-    {
-        // 内定的开发者才发送消息，其他用户屏蔽，以免影响账号的正常使用
-        $developers = array('og0UpuEhZ0No4K7Wf0DflsBYQzPE', 'og0UpuAo8aPWb-QqIugaB48gI94Q', 'og0UpuDjngtyF1FsQoWrOix78sLA');
-        if( !in_array($msg_data['from_username'], $developers))
-        {
-            echo '';exit;
-        }
-
-        // 记录微信消息
-        $this->load->service('msg/wechat_msg_service');
-        $this->wechat_msg_service->add_msg($msg_data['from_username'], $msg_data['msg_type'], $msg_data['media_path'], $msg_data['media_id'], $msg_data['content']);
-
-        $this->load->service('user/toy_wechat_relation_service');
-        // 处理关注事件
-        if(strpos($msg_data['content'], 'gz:') === 0)
-        {
-            $this->toy_wechat_relation_service->handle_relationship_msg($msg_data);
-        }
-        else{
-            $msg = array(
-                'messageType' => $msg_data['msg_type']
-            , 'text' => $msg_data['content']
-            , 'file' => HOME_URL. '/' . $msg_data['media_path']
-            );
-
-            // todo 暂时统一使用admin用户发送消息
-            $from_user = 'admin';
-            // 获取app用户unique_id
-            $to_user = $this->toy_wechat_relation_service->get_child_toy_user($msg_data['from_username']);
-
-            $url = '127.0.0.1:8090/im_server/servlet/ChatServlet?from_user='. $from_user
-                . '&to_user=' . $to_user . '&password=' . '&msg=' . json_encode($msg);
-
-            $this->load->library('wechat/wechat_auth');
-            $this->wechat_auth->https_request($url);
-        }
     }
 
     /************************************接收消息---end***********************************************************/
@@ -254,24 +210,6 @@ class Index extends  MY_Controller{
         $this->load->library('wechat/media_deliver');
         $res = $this->media_deliver->download_media($media_id);
         echo $res;exit;
-    }
-
-
-    /**
-     * 测试好友关系
-     */
-    public function test_relationship()
-    {
-        $msg_data = array(
-            'from_username' => 'og0UpuEhZ0No4K7Wf0DflsBYQzPE'
-        , 'to_username' => 'gh_f3e29636ebd7'
-        , 'msg_type' => 'text'
-        , 'media_id' => ''
-        , 'media_path' => ''
-        , 'content' => 'gz:eb2c8e820c13836'
-        , 'event' => ''
-        );
-        $this->_send_msg_to_app($msg_data);
     }
 
 

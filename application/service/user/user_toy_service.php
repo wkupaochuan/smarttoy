@@ -98,7 +98,6 @@ class User_toy_service extends MY_Service{
     }
 
 
-
     /*****************************************private methods*************************************************/
 
 } 
