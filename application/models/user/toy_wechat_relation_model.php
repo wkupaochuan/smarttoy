@@ -70,9 +70,9 @@ EOD;
      */
     private function _select_from()
     {
-        $this->db->from($this->_table_name);
-        $this->db->join('toy_user_toy toy_user', 'toy_user_toy.id = toy_user_toy_wechat_relationship.toy_user_id', 'left');
-        $this->db->join('toy_user_wechat wechat_user', 'wechat_user.id = toy_user_toy_wechat_relationship.wechat_user_id', 'left');
+        $this->db->from($this->_table_name . ' as relation');
+        $this->db->join('toy_user_toy toy_user', 'toy_user.id = relation.toy_user_id', 'left');
+        $this->db->join('toy_user_wechat wechat_user', 'wechat_user.id = relation.wechat_user_id', 'left');
     }
 
 

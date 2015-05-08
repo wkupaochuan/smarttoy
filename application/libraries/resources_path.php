@@ -8,6 +8,8 @@
 
 class resources_path {
 
+    private $_ci;
+
     // 域名
     const PROJECT_URI = 'http://toy-admin.wkupaochuan.com';
 
@@ -32,6 +34,12 @@ class resources_path {
     // app 用户头像目录
     private $_toy_user_face_root;
 
+    // 从微信消息下载的多媒体
+    private $_wechat_msg_media_root;
+
+    // app用户消息中上传的多媒体
+    private $_toy_msg_media_root;
+
 
     /*************************************************** public methods *************************************************************************/
 
@@ -39,6 +47,7 @@ class resources_path {
     public function __construct()
     {
         $this->_init_root_folders();
+        $this->_ci = &get_instance();
     }
 
 
@@ -71,6 +80,48 @@ class resources_path {
 
 
     /**
+     * 上传app用户消息中的多媒体
+     * @return string
+     */
+    public function upload_toy_msg_media()
+    {
+        return $this->_upload_file($this->_toy_user_face_root);
+    }
+
+
+    /**
+     * 下载微信消息中的多媒体
+     * @param $media_url
+     * @return string
+     */
+    public function download_wechat_msg_media($media_url)
+    {
+        $ch = curl_init($media_url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_NOBODY, 0);    //对body进行输出。
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $package = curl_exec($ch);
+        $httpinfo = curl_getinfo($ch);
+
+        curl_close($ch);
+        $media = array_merge(array('mediaBody' => $package), $httpinfo);
+
+        //求出文件格式, 获取文件名称
+        preg_match('/\w\/(\w+)/i', $media["content_type"], $extmatches);
+        $fileExt = $extmatches[1];
+        $filename = time().rand(100,999).".{$fileExt}";
+
+        $this->_make_sure_folder(self::PROJECT_PATH . $this->_wechat_msg_media_root);
+        file_put_contents(self::PROJECT_PATH . $this->_wechat_msg_media_root. '/'. $filename,$media['mediaBody']);
+
+        return  array(
+            'filename' => $this->_wechat_msg_media_root. '/'. $filename
+            , 'url' => $this->get_resource_path($this->_wechat_msg_media_root. '/'. $filename)
+        );
+    }
+
+
+    /**
      * 获取资源的可访问地址
      * @param $path
      * @return string
@@ -97,6 +148,26 @@ class resources_path {
 
         // 初始化app用户头像目录
         $this->_toy_user_face_root = self::UPLOAD_ROOT . '/toy_face_url';
+
+        // 初始化微信消息多媒体目录
+        $this->_wechat_msg_media_root = self::UPLOAD_ROOT . '/msg/wechat';
+
+        // 初始化app用户消息多媒体目录
+        $this->_toy_msg_media_root = self::UPLOAD_ROOT . '/msg/toy';
+    }
+
+
+
+    /**
+     * 确保目录可用
+     */
+    private function _make_sure_folder($folder)
+    {
+        if (!is_dir($folder)) {
+            if (!mkdir($folder, 0777, TRUE)) {
+                throw new Exception('Failed to create folder: ' . $folder);
+            }
+        }
     }
 
 
@@ -119,6 +190,7 @@ class resources_path {
         // 移动文件
         if(!file_exists($absolute_target_file))
         {
+            $this->_make_sure_folder(self::PROJECT_PATH . $target_root);
             move_uploaded_file($tempFile,$absolute_target_file);
         }
 

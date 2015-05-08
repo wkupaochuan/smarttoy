@@ -26,18 +26,6 @@ class MY_Controller extends CI_Controller
 	}
 
 
-
-    /**
-     * 记录调试信息
-     * @param $data
-     */
-    public function debug_log($data)
-    {
-        // 记录调试内容
-        $this->_debug_log($data);
-    }
-
-
     /**
      * 请求成功
      * @param $data
@@ -96,8 +84,6 @@ class MY_Controller extends CI_Controller
     }
 
 
-
-
  /****************************************private methods*********************************************************************/
 
     /**
@@ -107,31 +93,10 @@ class MY_Controller extends CI_Controller
     {
         $params = $_REQUEST;
         $url = $_SERVER['REQUEST_URI'];
-        $this->_log(date('Y-m-d H:i:s') . '  request -- ' . $url . " params\n  "   .print_r($params, true));
+        $log_msg = '  request -- ' . $url . " params\n  "   .print_r($params, true);
+        $this->log->write_log('debug', $log_msg);
     }
 
-
-    /**
-     * 记录调试日志
-     * @param $data
-     */
-    private function _debug_log($data)
-    {
-        $url = $_SERVER['REQUEST_URI'];
-        $this->_log(date('Y-m-d H:i:s') . '  debug -- '  . $url . " data\n  " .print_r($data, true));
-    }
-
-
-    /**
-     * 记录日志
-     * @param $msg
-     */
-    private function _log($msg)
-    {
-        $file_name = 'route_' . date('Y-m-d') . '.log';
-        $file_path = '/var/www/dev_tool/ToyAppApi/log/';
-        error_log($msg . "\n", 3, $file_path . $file_name);
-    }
 
     /**
      * 校验登陆状态

@@ -42,7 +42,10 @@ class receive_wechat_msg_service extends MY_Service{
         $media_path = '';
         if($download_media && !empty($postObj->MediaId))
         {
-            $media_path  = $this->_download_media($postObj->MediaId);
+            $this->load->library('wechat/media_deliver');
+            $res = $this->media_deliver->download_media($postObj->MediaId);
+
+            $media_path = $res['url'];
         }
 
         // 组装消息参数
@@ -57,7 +60,6 @@ class receive_wechat_msg_service extends MY_Service{
             , 'event_key' => isset($postObj->EventKey)? (string)$postObj->EventKey:''
             , 'ticket' => isset($postObj->ticket)? (string)$postObj->ticket:''
         );
-
         return $res;
     }
 
@@ -75,7 +77,6 @@ class receive_wechat_msg_service extends MY_Service{
             case 'image':
                 $this->load->service('msg/wechat_msg_service');
                 $this->wechat_msg_service->handle_normal_msg_from_wechat($msg);
-//                $this->_send_msg_to_app($msg);
 //                $this->receive_wechat_msg_service->send_text_msg($msg['from_username'], $msg['to_username'], '消息发送成功');
                 break;
             case 'event':
@@ -87,27 +88,7 @@ class receive_wechat_msg_service extends MY_Service{
 
 
 
-
     /*******************************************************private methods*****************************************************************************/
-
-
-    /**
-     * 下载多媒体
-     * @param $media_id
-     * @return null
-     */
-    private function _download_media($media_id)
-    {
-        if(empty($media_id))
-        {
-            return null;
-        }
-
-        $this->load->library('wechat/media_deliver');
-        $download_file_path = $this->media_deliver->download_media($media_id);
-
-        return $download_file_path;
-    }
 
 
     /**
@@ -116,7 +97,6 @@ class receive_wechat_msg_service extends MY_Service{
      */
     private function _handle_event_msg($msg)
     {
-        $this->log->write_log('debug', $msg);
         switch($msg['event'])
         {
             // 关注或者扫描二维码
@@ -145,9 +125,6 @@ class receive_wechat_msg_service extends MY_Service{
     {
         // 添加微信关注者用户
         $this->wechat_user_service->subscribe($msg['from_username'], $msg['to_username']);
-
-        // debug
-        $this->log->write_log('debug', '关注事件:'.var_export($msg, true));
 
         // 未关注者扫描二维码事件
         if(!empty($msg['event_key']))
@@ -180,7 +157,6 @@ class receive_wechat_msg_service extends MY_Service{
      */
     private function _handle_scan_event($open_id, $developer_weixin_name, $scene_id)
     {
-        $this->log->write_log('debug', '扫描事件, 场景ID:' . $scene_id);
         $toy_user_id = $scene_id;
 
         $where = array(

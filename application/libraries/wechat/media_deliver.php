@@ -17,8 +17,16 @@ class media_deliver {
     const MEDIA_TYPE_VOICE = 'voice';
     const MEDIA_TYPE_IMAGE = 'image';
 
+    private $_ci;
+
 
  /******************************public methods**********************************************************************************/
+
+    public function __construct()
+    {
+        $this->_ci = & get_instance();
+        $this->_ci->load->library('wechat/wechat_auth');
+    }
 
     /**
      * 上传音频
@@ -57,15 +65,15 @@ class media_deliver {
      */
     public function download_media($media_id)
     {
+
         $url = self::DOWNLOAD_URL;
-        $CI = & get_instance();
-        $CI->load->library('wechat/wechat_auth');
-        $access_token = $CI->wechat_auth->get_access_token();
+
+        $access_token = $this->_ci->wechat_auth->get_access_token();
         $url .= 'access_token='.$access_token;
         $url .= '&media_id='.$media_id;
 
-        $file_path = $this->_download_weixin_file($url);
-        return $file_path;
+
+        return $this->_ci->resources_path->download_wechat_msg_media($url);
     }
 
 
@@ -86,41 +94,6 @@ class media_deliver {
         $url .= '&type='.$type;
 
         return $url;
-    }
-
-
-
-    /**
-     * 下载微信文件
-     * @param $url
-     * @return string
-     */
-    private function _download_weixin_file($url)
-    {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_NOBODY, 0);    //对body进行输出。
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $package = curl_exec($ch);
-        $httpinfo = curl_getinfo($ch);
-
-        curl_close($ch);
-        $media = array_merge(array('mediaBody' => $package), $httpinfo);
-
-        //求出文件格式, 获取文件名称
-        preg_match('/\w\/(\w+)/i', $media["content_type"], $extmatches);
-        $fileExt = $extmatches[1];
-        $filename = time().rand(100,999).".{$fileExt}";
-
-        // 确保下载文件夹存在
-        $file_dir = FCPATH . FILE_DOWNLOAD_ROOT_DIR;
-        if(!file_exists($file_dir)){
-            mkdir($file_dir,0777,true);
-        }
-
-        file_put_contents($file_dir.'/'.$filename,$media['mediaBody']);
-
-        return FILE_DOWNLOAD_ROOT_DIR . '/'.$filename;
     }
 
 

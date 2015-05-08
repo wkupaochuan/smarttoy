@@ -32,7 +32,7 @@ class Index extends  MY_Controller{
             }
             catch(Exception $e)
             {
-                $this->debug_log($e->getTraceAsString());
+                echo '';exit;
             }
         }
         echo '';exit;
@@ -86,40 +86,6 @@ class Index extends  MY_Controller{
     /************************************客服消息--end***********************************************************/
 
 
-    /**
-     * 上传文件
-     */
-    public function upload_file()
-    {
-        try{
-            $uploadedFileData = $_FILES['Filedata'];
-
-            $tempFile = $uploadedFileData['tmp_name'];
-
-            // Define a destination
-            $targetFileName = time().'.'.pathinfo($uploadedFileData['name'], PATHINFO_EXTENSION);
-            $targetFile = FILE_UPLOAD_PATH . '/' .$targetFileName;
-
-            // 移动文件到目的目录
-            $this->moveFile($tempFile,$targetFile);
-
-            echo $targetFileName;exit;
-        }
-        catch(Exception $e)
-        {
-            $this->rest_fail($e->getMessage());
-        }
-    }
-
-    public function moveFile($tempFile,$targetFile)
-    {
-        if(!file_exists($targetFile))
-        {
-            move_uploaded_file($tempFile,$targetFile);
-        }
-    }
-
-
 
     /************************************ 二维码 --begin ***********************************************************/
 
@@ -130,8 +96,6 @@ class Index extends  MY_Controller{
     public function get_qrcode()
     {
         try{
-            $params = $this->input->get_params();
-
             // 获取登陆用户的信息
             $user_info = $this->session->get_user_info();
             $scene_id = $user_info['id'];
@@ -147,21 +111,6 @@ class Index extends  MY_Controller{
     }
 
     /************************************ 二维码--end ***********************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -200,34 +149,6 @@ class Index extends  MY_Controller{
         print_r($res);exit;
     }
 
-
-    /**
-     * 测试下载多媒体文件
-     */
-    public function test_download_media()
-    {
-        $media_id = 'N00fINLh8zxZ30JO5rg6FdubWvjuxuAeSY2fQv7oamzbw9ePmo7gUitfprZ5ud0h';
-        $this->load->library('wechat/media_deliver');
-        $res = $this->media_deliver->download_media($media_id);
-        echo $res;exit;
-    }
-
-
-    /**
-     * 测试自动接收消息
-     */
-    public function test_recieve_msg()
-    {
-        $url = 'http://toy-api.wkupaochuan.com/wechat/index/dispatch';
-        $data = array(
-            'FromUserName' => 'og0UpuEhZ0No4K7Wf0DflsBYQzPE'
-            , 'ToUserName' => 'gh_f3e29636ebd7'
-            , 'MsgType' => 'text'
-            , 'Content' => 'ddd'
-        );
-        $res = $this->make_post_request($url, $data);
-        print_r($res);exit;
-    }
 
 
 } 
