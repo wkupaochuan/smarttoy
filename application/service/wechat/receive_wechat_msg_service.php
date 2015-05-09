@@ -86,6 +86,13 @@ class receive_wechat_msg_service extends MY_Service{
     }
 
 
+    /**
+     * 回复消息
+     */
+    public function reponse_text_msg($msg_content)
+    {
+
+    }
 
 
     /*******************************************************private methods*****************************************************************************/

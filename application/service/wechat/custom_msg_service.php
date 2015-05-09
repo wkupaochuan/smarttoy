@@ -151,7 +151,7 @@ EOD;
         $url = self::CUSTOM_MSG_URL.$access_token;
 
         // 发送请求
-        $this->wechat_auth->https_request($url, $body);
+        $this->curl->wechat_request($url, $body);
     }
 
 

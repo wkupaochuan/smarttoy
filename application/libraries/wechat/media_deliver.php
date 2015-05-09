@@ -106,8 +106,7 @@ class media_deliver {
     private function _upload_file_to_weixin($url, $fields)
     {
         $CI = & get_instance();
-        $CI->load->library('wechat/wechat_auth');
-        $res =  $CI->wechat_auth->https_request($url, $fields);
+        $res =  $CI->curl->wechat_request($url, $fields);
 
         return isset($res->media_id)? $res->media_id:null;
     }

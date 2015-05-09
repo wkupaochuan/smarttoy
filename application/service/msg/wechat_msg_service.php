@@ -112,8 +112,7 @@ class wechat_msg_service extends MY_Service{
             $url = '127.0.0.1:8090/im_server/servlet/ChatServlet?from_user='. $from_user
                 . '&to_user=' . $to_user . '&password=' . '&msg=' . json_encode($msg);
 
-            $this->load->library('wechat/wechat_auth');
-            $res = $this->wechat_auth->https_request($url);
+            $res = $this->curl->request($url);
         }
     }
 

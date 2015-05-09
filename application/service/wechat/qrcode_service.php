@@ -47,7 +47,7 @@ class qrcode_service extends MY_Service{
                 }
 EOD;
 
-        $qr_code_info = $this->wechat_auth->https_request($url, $body);
+        $qr_code_info = $this->curl->wechat_request($url, $body);
 
         $res = array(
             'ticket' => $qr_code_info->ticket

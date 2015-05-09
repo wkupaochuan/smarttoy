@@ -123,7 +123,7 @@ class wechat_user_service extends MY_Service{
         $access_token = $this->wechat_auth->get_access_token();
         $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=' . $access_token . '&openid=' . $wechat_open_id . '&lang=zh_CN';
 
-        $wechat_user_info = $this->wechat_auth->https_request($url);
+        $wechat_user_info = $this->curl->wechat_request($url);
         return $wechat_user_info;
     }
 
@@ -144,7 +144,7 @@ class wechat_user_service extends MY_Service{
             $url .= $next_openid;
         }
 
-        $res = $this->wechat_auth->https_request($url);
+        $res = $this->curl->wechat_request($url);
 
         return array(
             'user_list' => $res->data->openid
