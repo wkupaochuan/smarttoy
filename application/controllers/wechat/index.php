@@ -25,20 +25,10 @@ class Index extends  MY_Controller{
         if (isset($_GET['echostr'])) {
             echo $_GET['echostr'];exit;
         }else{
-            try{
-                // 解析消息
-                $this->load->service('wechat/receive_wechat_msg_service');
-                $msg_data = $this->receive_wechat_msg_service->get_msg(true);
-
-                // 处理消息
-                $this->receive_wechat_msg_service->handle_msg($msg_data);
-            }
-            catch(Exception $e)
-            {
-                echo '';exit;
-            }
+            // 这里比较特殊，解析、处理、回复消息完全交给service去完成
+            $this->load->service('wechat/receive_wechat_msg_service');
+            $this->receive_wechat_msg_service->handle_msg();
         }
-        echo '';exit;
     }
 
 
@@ -87,6 +77,22 @@ class Index extends  MY_Controller{
         }
 
     }
+
+
+    /**
+     * 上传app用户消息中的多媒体
+     */
+    public function upload_toy_msg_media()
+    {
+        try{
+            $res = $this->resources_path->upload_toy_msg_media();
+            $this->rest_success($res);
+        }catch (Exception $e)
+        {
+            $this->rest_fail($e->getMessage());
+        }
+    }
+
 
     /************************************客服消息--end***********************************************************/
 

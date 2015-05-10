@@ -2,6 +2,9 @@
 
 class receive_wechat_msg_service extends MY_Service{
 
+
+    /*******************************************************public methods*****************************************************************************/
+
     public function __construct()
     {
         parent::__construct();
@@ -10,18 +13,54 @@ class receive_wechat_msg_service extends MY_Service{
         $this->load->library('wechat/wechat_auth');
         $this->load->service('user/wechat_user_service');
         $this->load->model('user/user_toy_model');
+        $this->load->service('msg/wechat_msg_service');
     }
 
 
-    /*******************************************************public methods*****************************************************************************/
+    /**
+     * 处理微信推送的消息
+     */
+    public function handle_msg()
+    {
+        $res = '';
+        try{
+            // 解析微信消息
+            $msg = $this->_decode_msg_from_wechat(true);
+
+            switch($msg['msg_type'])
+            {
+                case 'text':
+                case 'voice':
+                case 'image':
+                    $this->wechat_msg_service->handle_normal_msg_from_wechat($msg);
+                    break;
+                case 'event':
+                    $this->_handle_event_msg($msg);
+                    break;
+            }
+        }catch (Exception $e)
+        {
+            $res =  $this->_get_reponse_text_msg($msg['to_username'], $msg['from_username'], '发送失败，稍后重试!');
+        }
+
+        $res = $this->_get_reponse_text_msg($msg['to_username'], $msg['from_username'], '您的消息已经转发成功!');
+
+        $this->log->write_log('debug', '接收消息后回复:' . $res);
+        echo $res;
+        die;
+    }
+
+
+    /*******************************************************private methods*****************************************************************************/
+
 
 
     /**
-     * 解析消息
+     * 解析微信推送的消息
      * @param bool $download_media
      * @return array
      */
-    public function get_msg($download_media = false)
+    private function _decode_msg_from_wechat($download_media = false)
     {
         $res = array();
         //get post data, May be due to the different environments
@@ -62,40 +101,6 @@ class receive_wechat_msg_service extends MY_Service{
         );
         return $res;
     }
-
-
-    /**
-     * 处理微信推送的消息
-     * @param $msg
-     */
-    public function handle_msg($msg)
-    {
-        switch($msg['msg_type'])
-        {
-            case 'text':
-            case 'voice':
-            case 'image':
-                $this->load->service('msg/wechat_msg_service');
-                $this->wechat_msg_service->handle_normal_msg_from_wechat($msg);
-//                $this->receive_wechat_msg_service->send_text_msg($msg['from_username'], $msg['to_username'], '消息发送成功');
-                break;
-            case 'event':
-                $this->_handle_event_msg($msg);
-                break;
-        }
-    }
-
-
-    /**
-     * 回复消息
-     */
-    public function reponse_text_msg($msg_content)
-    {
-
-    }
-
-
-    /*******************************************************private methods*****************************************************************************/
 
 
     /**
@@ -182,6 +187,25 @@ class receive_wechat_msg_service extends MY_Service{
         $this->user_toy_model->update($new_user, $where);
 
         return $relation_id;
+    }
+
+
+    /**
+     * 回复消息
+     */
+    public function _get_reponse_text_msg($from_user, $to_user, $msg_content)
+    {
+        $text_msg_tpl = "<xml>
+                <ToUserName><![CDATA[%s]]></ToUserName>
+                <FromUserName><![CDATA[%s]]></FromUserName>
+                <CreateTime>%s</CreateTime>
+                <MsgType><![CDATA[text]]></MsgType>
+                <Content><![CDATA[%s]]></Content>
+                <FuncFlag>%d</FuncFlag>
+                </xml>";
+
+        $resultStr = sprintf($text_msg_tpl, $from_user, $to_user, time(), $msg_content, 0);
+        return $resultStr;
     }
 
 } 
