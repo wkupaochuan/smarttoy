@@ -27,19 +27,13 @@ class toy_wechat_relation_service extends MY_Service{
 
     /**
      * 根据app 用户unique_id查找好友的微信号
-     * @param $toy_user_unique_id
+     * @param $toy_user_id
      * @return mixed
      */
-    public function get_parent_wechat_user($toy_user_unique_id)
+    public function get_parent_wechat_user($toy_user_id)
     {
-        $wechat_user_info = $this->toy_wechat_relation_model->get_parent_wechat_user_by_toy_unique_id($toy_user_unique_id);
-        if(empty($wechat_user_info))
-        {}
-        else if(count($wechat_user_info) > 1)
-        {}
-        else{
-            return $wechat_user_info[0]['open_id'];
-        }
+        $where = array('toy_user_id' => $toy_user_id);
+        return $this->toy_wechat_relation_model->get($where);
     }
 
 

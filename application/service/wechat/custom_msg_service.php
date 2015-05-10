@@ -14,8 +14,7 @@ class custom_msg_service extends MY_Service{
     {
         parent::__construct();
 
-        // 加载微信帮助类
-        $this->load->library('wechat/wechat_auth');
+        $this->load->library('wechat/media_deliver');
     }
 
 
@@ -28,11 +27,11 @@ class custom_msg_service extends MY_Service{
      */
     public function send_msg($to_user, $msg_type, $msg_content, $file_path)
     {
-        // todo 处理消息类型异常
-        if(empty($msg_content))
+        // 处理文件路径
+        if(!empty($file_path))
         {
+            $file_path = $this->resources_path->get_resource_path($file_path);
         }
-
         switch($msg_type)
         {
             case 'text':
@@ -81,8 +80,6 @@ EOD;
      */
     private function _send_image_msg($to_user, $file_path)
     {
-        $file_path = FILE_UPLOAD_PATH . '/' .$file_path;
-        $this->load->library('wechat/media_deliver');
         $media_id = $this->media_deliver->upload_image($file_path);
 
         if(empty($media_id))
@@ -113,10 +110,7 @@ EOD;
      */
     private function _send_voice_msg($to_user, $file_path)
     {
-        $file_path = FILE_UPLOAD_PATH . '/' .$file_path;
-        $this->load->library('wechat/media_deliver');
         $media_id = $this->media_deliver->upload_voice($file_path);
-//        $media_id = "PoygXipp3jNYcXTs7Ftq-w18KAIk4Bk_-RyiGPCPT1d5ol2CFNHvB1o5tRUw_03r";
         if(empty($media_id))
         {
             throw new Exception('上传音频到微信失败');

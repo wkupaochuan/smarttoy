@@ -83,7 +83,7 @@ class MY_Session extends CI_Session{
      */
     private function _generate_access_token($user_name, $password)
     {
-        $access_token =  md5('xiaomili'.$user_name.$password);
+        $access_token =  md5('xiaomili'.$user_name.$password.time());
         return $access_token;
     }
 

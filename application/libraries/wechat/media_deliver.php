@@ -87,9 +87,7 @@ class media_deliver {
     private function _get_full_upload_url($type)
     {
         $url = self::UPLOAD_URL;
-        $CI = & get_instance();
-        $CI->load->library('wechat/wechat_auth');
-        $access_token = $CI->wechat_auth->get_access_token();
+        $access_token = $this->_ci->wechat_auth->get_access_token();
         $url .= 'access_token='.$access_token;
         $url .= '&type='.$type;
 
@@ -105,9 +103,7 @@ class media_deliver {
      */
     private function _upload_file_to_weixin($url, $fields)
     {
-        $CI = & get_instance();
-        $res =  $CI->curl->wechat_request($url, $fields);
-
+        $res =  $this->_ci->curl->wechat_request($url, $fields);
         return isset($res->media_id)? $res->media_id:null;
     }
 

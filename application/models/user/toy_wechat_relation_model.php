@@ -59,6 +59,7 @@ class toy_wechat_relation_model extends CI_Model{
     {
         $select = <<<EOD
             toy_user.id as toy_user_id, wechat_user.id as wechat_user_id, toy_user.user_name, toy_user.nick_name
+            , wechat_user.open_id
 EOD;
 
         $this->db->select($select);

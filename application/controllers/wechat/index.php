@@ -49,30 +49,36 @@ class Index extends  MY_Controller{
             $params = $this->input->post();
 
             // 获取参数
-            $toy_user_unique_id = $params['toyUser'];
             $msg_type = $params['messageType'];
             $msg_content = isset($params['content'])? $params['content']:'';
             $file_path = isset($params['filePath'])? $params['filePath']:'';
 
-            // 获取接收人
-            $this->load->service('user/toy_wechat_relation_service');
-            $to_user_open_id = $this->toy_wechat_relation_service->get_parent_wechat_user($toy_user_unique_id);
-            if(empty($to_user_open_id))
-            {
-                throw new Exception('找不到对应的接收人');
-            }
+            // 获取当前用户
+            $toy_user_info = $this->session->get_user_info();
 
             // 记录app消息
             $this->load->service('msg/app_msg_service');
-            $this->app_msg_service->add_msg($toy_user_unique_id, $msg_type, $file_path, $msg_content);
+            $this->app_msg_service->add_msg($toy_user_info['id'], $msg_content, $msg_type, $file_path);
+
+            // find parents wechat users
+            $this->load->service('user/toy_wechat_relation_service');
+            $wechat_users = $this->toy_wechat_relation_service->get_child_toy_users($toy_user_info['id']);
+            if(empty($wechat_users))
+            {
+                $this->rest_fail('没有对应微信接收人!');
+            }
 
             // 发送消息
             $this->load->service('wechat/custom_msg_service');
-            $this->custom_msg_service->send_msg($to_user_open_id, $msg_type, $msg_content, $file_path);
+            foreach($wechat_users as $parent)
+            {
+                $this->custom_msg_service->send_msg($parent['open_id'], $msg_type, $msg_content, $file_path);
+            }
 
-            $this->rest_success('', '发送消息成功');
+            $this->rest_success('发送消息成功');
         }
         catch(Exception $e){
+            $this->log->write_log('error', $e->getMessage());
             $this->rest_fail($e->getMessage());
         }
 
@@ -89,6 +95,7 @@ class Index extends  MY_Controller{
             $this->rest_success($res);
         }catch (Exception $e)
         {
+            $this->log->write_log('error', $e->getMessage());
             $this->rest_fail($e->getMessage());
         }
     }

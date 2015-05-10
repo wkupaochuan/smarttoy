@@ -115,7 +115,7 @@ class resources_path {
         file_put_contents(self::PROJECT_PATH . $this->_wechat_msg_media_root. '/'. $filename,$media['mediaBody']);
 
         return  array(
-            'filename' => $this->_wechat_msg_media_root. '/'. $filename
+            'file_path' => $this->_wechat_msg_media_root. '/'. $filename
             , 'url' => $this->get_resource_path($this->_wechat_msg_media_root. '/'. $filename)
         );
     }
@@ -128,9 +128,20 @@ class resources_path {
      */
     public function get_resource_path($path)
     {
-        return self::PROJECT_URI . '/'. $path;
+
+        return self::PROJECT_PATH . '/'. $path;
     }
 
+
+    /**
+     * 获取资源的访问地址
+     * @param $path
+     * @return string
+     */
+    public function get_resource_url($path)
+    {
+        return self::PROJECT_URI . '/'. $path;
+    }
 
 
 
@@ -195,7 +206,7 @@ class resources_path {
         }
 
         return  array(
-            'filename' => $targetFile
+            'file_path' => $targetFile
             , 'url' => $this->get_resource_path($targetFile)
         );
     }

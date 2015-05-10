@@ -79,7 +79,7 @@ class wechat_msg_service extends MY_Service{
         // find children
         $this->load->service('user/toy_wechat_relation_service');
         $toy_users = $this->toy_wechat_relation_service->get_child_toy_users($wechat_user_info['id']);
-        $this->log->write_log('debug', '转发微信消息到app, 绑定的app用户：' . var_export($toy_users, true));
+
         // 没有绑定的孩子，直接返回
         if(empty($toy_users))
         {
