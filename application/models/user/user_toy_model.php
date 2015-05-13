@@ -83,6 +83,9 @@ class User_toy_model extends  CI_Model{
                 case 'user_name':
                     $this->db->where('user_name', $search_value);
                     break;
+                case 'password':
+                    $this->db->where('password', $search_value);
+                    break;
                 case 'toy_unique_id':
                     $this->db->where('toy_unique_id', $search_value);
                     break;

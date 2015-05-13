@@ -128,6 +128,7 @@ class MY_Controller extends CI_Controller
             '/app_user/index/login'
             , '/app_user/index/register'
             , '/wechat/index/dispatch'
+            , '/story/index/get_story_list'
         );
 
         $out_uri_tmp = array(

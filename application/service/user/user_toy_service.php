@@ -94,6 +94,12 @@ class User_toy_service extends MY_Service{
             $user_data['sex'] = $params['sex'];
         }
 
+        // 性别
+        if(isset($params['phone_num']) && !empty($params['phone_num']))
+        {
+            $user_data['phone_num'] = $params['phone_num'];
+        }
+
         $this->user_toy_model->update($user_data,$where);
     }
 
