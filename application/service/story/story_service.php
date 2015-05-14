@@ -16,20 +16,20 @@ class Story_service extends MY_Service{
     /**
      * 搜索故事
      * @param $search_words
+     * @param null $limit
+     * @param null $offset
      * @return array
      */
-    public function get_story_list_by_search($search_words)
+    public function get_story_list_by_search($search_words, $limit = null, $offset = null)
     {
-        $res = array();
-
         // 获取所有故事
-        $all_storys = $this->story_model->get_sotry_list();
+        $all_storys = $this->story_model->get(array('is_deleted' => 2), $limit, $offset);
 
         // 补全故事和图片地址
         foreach($all_storys as & $story)
         {
-            $story['story_cover_path'] = empty($story['story_cover_path'])? '':TOY_ADMIN_URL . $story['story_cover_path'];
-            $story['path'] = empty($story['path'])? '':TOY_ADMIN_URL . $story['path'];
+            $story['story_cover'] = empty($story['story_cover'])? '':$this->resources_path->get_resource_url($story['story_cover']);
+            $story['story_voice'] = empty($story['story_voice'])? '':$this->resources_path->get_resource_url($story['story_voice']);
         }
 
         if(!empty($search_words)){
@@ -58,7 +58,7 @@ class Story_service extends MY_Service{
     {
         foreach($story_list as & $story)
         {
-            $story['similarity'] = similar_text($search_words, $story['name']);
+            $story['similarity'] = similar_text($search_words, $story['story_title']);
         }
 
         $story_list = $this->array_sort($story_list, 'similarity', 'desc');

@@ -19,16 +19,21 @@ class Index extends  MY_Controller{
      */
     public function get_story_list()
     {
-        // 获取参数
-        $params = $this->input->get_params();
-//        $limit = isset($params['limit'])? $params['limit']:$this->config->my_item('toy/common_page', 'default_limit');
-//        $offset = isset($params['offset'])? $params['limit']:$this->config->my_item('toy/common_page', 'default_offset');
-        $search_words = isset($params['search_words'])? $params['search_words']:'';
+        try{
+            // 获取参数
+            $params = $this->input->get_params();
+            $page_size  = isset($params['page_size'])? $params['page_size'] : 10;
+            $page_num  = isset($params['page_num'])? $params['page_num'] : 1;
+            $search_words = isset($params['search_words'])? $params['search_words']:'';
 
-        // 搜索故事
-        $story_list = $this->story_service->get_story_list_by_search($search_words);
+            // 搜索故事
+            $story_list = $this->story_service->get_story_list_by_search($search_words, $page_size, ($page_num - 1) * $page_size);
 
-        $this->rest_success($story_list);
+            $this->rest_success($story_list);
+        }catch (Exception $e)
+        {
+            $this->rest_fail('请求列表出错!');
+        }
     }
 
 
